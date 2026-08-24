@@ -1,0 +1,2071 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>NAHAランログ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A8A9E">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Oswald:wght@500;600&display=swap">
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg:#F3F6F6; --card:#FFFFFF; --card2:#ECF2F2; --ink:#182B2E; --mut:#5F7276; --faint:#8FA1A4;
+  --line:#DFE7E7; --line2:#EAF0F0;
+  --accent:#0A8A9E; --accent-ink:#FFFFFF; --accent-soft:#E1F0F2;
+  --coral:#D95F45; --coral-soft:#F9E9E4; --indigo:#5E68C4; --indigo-soft:#EAECF8;
+  --good:#2F7D4C; --good-soft:#E3F0E7; --warn:#A96A10; --warn-soft:#F6EDDC; --bad:#BC3F2E; --bad-soft:#F8E7E4;
+  --c1:#0A8A9E; --c2:#D95F45; --c3:#5E68C4; --grid:#E5EBEB; --axis:#9AABAE;
+  --shadow:0 1px 2px rgba(24,43,46,.06),0 4px 14px rgba(24,43,46,.05);
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10171A; --card:#1A2327; --card2:#151E21; --ink:#E6EEEE; --mut:#9FB1B4; --faint:#6E8184;
+    --line:#2A373B; --line2:#222E32;
+    --accent:#22A5BA; --accent-ink:#08262B; --accent-soft:#12333B;
+    --coral:#DB6852; --coral-soft:#3A231E; --indigo:#7680DE; --indigo-soft:#252A4A;
+    --good:#5CB57F; --good-soft:#1C3226; --warn:#D9A44A; --warn-soft:#372B14; --bad:#E06A57; --bad-soft:#3B211D;
+    --c1:#22A5BA; --c2:#DB6852; --c3:#7680DE; --grid:#263236; --axis:#5E7376;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10171A; --card:#1A2327; --card2:#151E21; --ink:#E6EEEE; --mut:#9FB1B4; --faint:#6E8184;
+  --line:#2A373B; --line2:#222E32;
+  --accent:#22A5BA; --accent-ink:#08262B; --accent-soft:#12333B;
+  --coral:#DB6852; --coral-soft:#3A231E; --indigo:#7680DE; --indigo-soft:#252A4A;
+  --good:#5CB57F; --good-soft:#1C3226; --warn:#D9A44A; --warn-soft:#372B14; --bad:#E06A57; --bad-soft:#3B211D;
+  --c1:#22A5BA; --c2:#DB6852; --c3:#7680DE; --grid:#263236; --axis:#5E7376;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+}
+/* ============ base ============ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans JP",-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;
+  font-size:15px; line-height:1.6;
+  padding-bottom:calc(64px + env(safe-area-inset-bottom));
+}
+h1,h2,h3{font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif; line-height:1.35; margin:0}
+button{font-family:inherit; cursor:pointer}
+input,select,textarea{font-family:inherit; font-size:15px; color:var(--ink)}
+.num{font-family:Oswald,"Noto Sans JP",sans-serif; font-variant-numeric:tabular-nums; letter-spacing:.01em}
+.tnum{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+
+/* ============ shell ============ */
+.wrap{max-width:1100px; margin:0 auto; padding:0 14px}
+.app-head{position:sticky; top:0; z-index:40; background:var(--bg); border-bottom:1px solid var(--line)}
+.app-head .wrap{display:flex; align-items:center; gap:12px; padding-top:10px; padding-bottom:8px}
+.brand h1{font-size:19px; font-weight:900; letter-spacing:.02em}
+.brand .sub{font-size:11px; color:var(--mut); letter-spacing:.08em}
+.head-spacer{flex:1}
+.count-pill{
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  background:var(--coral-soft); color:var(--coral);
+  border:1px solid transparent; border-radius:10px; padding:4px 12px; line-height:1.15;
+}
+.count-pill .cp-l{font-size:10px; letter-spacing:.1em; font-weight:700; white-space:nowrap}
+.count-pill .cp-n{font-size:20px; font-weight:600}
+.count-pill .cp-n small{font-size:11px; font-weight:500; margin-left:1px}
+.iconbtn{
+  border:1px solid var(--line); background:var(--card); color:var(--mut);
+  width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:16px;
+}
+.iconbtn:hover{color:var(--ink)}
+.sync-pill{
+  display:flex; align-items:center; gap:5px; border:1px solid var(--line); background:var(--card);
+  border-radius:99px; padding:4px 11px; font-size:11.5px; font-weight:700; color:var(--mut); white-space:nowrap;
+}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);display:inline-block}
+.sync-pill.on .sync-dot{background:var(--good)} .sync-pill.on{color:var(--good); border-color:var(--good-soft); background:var(--good-soft)}
+.sync-pill.offline .sync-dot{background:var(--warn)} .sync-pill.offline{color:var(--warn); background:var(--warn-soft); border-color:transparent}
+.sync-pill.err .sync-dot{background:var(--bad)} .sync-pill.err{color:var(--bad); background:var(--bad-soft); border-color:transparent}
+@media(max-width:600px){
+  .brand .sub{display:none}
+  .brand h1{font-size:17px}
+  .app-head .wrap{gap:8px}
+  .sync-pill span.sync-label{display:none}
+  .sync-pill{padding:8px}
+  .count-pill{flex-direction:row; align-items:baseline; gap:4px; padding:7px 10px}
+  .count-pill .cp-n{font-size:17px}
+}
+
+/* tabs */
+.tabs{display:flex; gap:2px; background:var(--bg)}
+.tabs .wrap{display:flex; gap:2px; padding:0 8px; width:100%; max-width:1100px}
+.tabbtn{
+  flex:1; border:0; background:none; color:var(--mut);
+  padding:9px 2px 11px; font-size:12.5px; font-weight:700; letter-spacing:.04em;
+  border-top:3px solid transparent; border-radius:0;
+}
+.tabbtn.on{color:var(--accent); border-top-color:var(--accent)}
+@media(min-width:721px){
+  .tabs{border-bottom:1px solid var(--line); position:sticky; top:57px; z-index:39}
+  .tabbtn{border-top:none; border-bottom:3px solid transparent; font-size:13.5px; padding:10px 2px}
+  .tabbtn.on{border-bottom-color:var(--accent)}
+  body{padding-bottom:40px}
+}
+@media(max-width:720px){
+  .tabs{position:fixed; left:0; right:0; bottom:0; z-index:50; border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom); background:var(--card)}
+}
+main{padding-top:16px}
+section.tab{display:none}
+section.tab.on{display:block}
+
+/* ============ cards & misc ============ */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:16px; margin-bottom:14px}
+.card h2{font-size:15px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px}
+.card h2 .hnote{font-size:11px; color:var(--faint); font-weight:500; letter-spacing:.04em}
+.chip{display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; line-height:1.7; white-space:nowrap}
+.chip.good{background:var(--good-soft); color:var(--good)}
+.chip.warn{background:var(--warn-soft); color:var(--warn)}
+.chip.bad{background:var(--bad-soft); color:var(--bad)}
+.chip.acc{background:var(--accent-soft); color:var(--accent)}
+.chip.coral{background:var(--coral-soft); color:var(--coral)}
+.chip.ind{background:var(--indigo-soft); color:var(--indigo)}
+.chip.mut{background:var(--card2); color:var(--mut)}
+.btn{
+  border:1px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:10px; padding:8px 14px; font-size:13.5px; font-weight:700;
+}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn.big{font-size:15px; padding:12px 18px; border-radius:12px}
+.btn.danger{color:var(--bad); border-color:var(--bad-soft); background:var(--bad-soft)}
+.btn.ghost{background:none; border-color:transparent; color:var(--mut)}
+.btnrow{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.seg{display:inline-flex; background:var(--card2); border-radius:10px; padding:3px; gap:2px; flex-wrap:wrap}
+.seg button{border:0; background:none; color:var(--mut); font-size:12.5px; font-weight:700; padding:5px 12px; border-radius:8px}
+.seg button.on{background:var(--card); color:var(--ink); box-shadow:var(--shadow)}
+.tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table.dt{border-collapse:collapse; width:100%; font-size:13px; white-space:nowrap}
+table.dt th{
+  text-align:left; font-size:11px; color:var(--mut); font-weight:700; letter-spacing:.05em;
+  padding:6px 10px; border-bottom:2px solid var(--line); background:var(--card)
+}
+table.dt td{padding:7px 10px; border-bottom:1px solid var(--line2); vertical-align:middle}
+table.dt tr.click{cursor:pointer}
+table.dt tr.click:hover td{background:var(--card2)}
+table.dt td.r, table.dt th.r{text-align:right}
+.empty{color:var(--faint); font-size:13px; text-align:center; padding:24px 0}
+.note{font-size:12px; color:var(--mut)}
+.mini{font-size:11px; color:var(--faint)}
+.rowNow td{background:var(--accent-soft)}
+.aimcell{white-space:normal; min-width:240px; font-size:12px; line-height:1.5}
+
+/* stat tiles */
+.tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px}
+@media(max-width:720px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px 8px; box-shadow:var(--shadow)}
+.tile .t-l{font-size:11px; color:var(--mut); font-weight:700; letter-spacing:.06em}
+.tile .t-v{font-size:24px; font-weight:600; line-height:1.2}
+.tile .t-v small{font-size:12px; color:var(--mut); font-weight:500; font-family:"Noto Sans JP",sans-serif; margin-left:2px}
+.tile .t-s{font-size:11px; color:var(--faint)}
+
+/* record list (mobile cards) */
+.rec-cards{display:none}
+@media(max-width:720px){
+  .rec-table{display:none}
+  .rec-cards{display:block}
+}
+.rcard{border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; margin-bottom:8px; background:var(--card); cursor:pointer}
+.rcard:active{background:var(--card2)}
+.rcard .r1{display:flex; align-items:baseline; gap:8px}
+.rcard .rdate{font-weight:700; font-size:13.5px}
+.rcard .rtime{color:var(--mut); font-size:12px}
+.rcard .sp{flex:1}
+.rcard .r2{display:flex; gap:14px; margin-top:4px; align-items:baseline; flex-wrap:wrap}
+.rcard .kv{line-height:1.3}
+.rcard .kv .k{font-size:10px; color:var(--faint); letter-spacing:.06em}
+.rcard .kv .v{font-size:17px; font-weight:600}
+.rcard .kv .v small{font-size:11px; color:var(--mut); font-family:"Noto Sans JP",sans-serif}
+.rcard .rmeta{font-size:11px; color:var(--faint); margin-top:3px}
+.rcard.pendfill{border-color:var(--accent); border-style:dashed}
+
+/* chart */
+.chart-box{position:relative}
+.chart-box svg{display:block; width:100%; height:auto}
+.tip{
+  position:absolute; pointer-events:none; z-index:5; display:none;
+  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.5;
+  padding:5px 9px; border-radius:8px; white-space:nowrap; transform:translate(-50%,-110%);
+}
+.tip b{font-weight:700}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--mut); margin-top:6px}
+.legend .li{display:flex; align-items:center; gap:5px}
+.legend .sw{width:14px; height:3px; border-radius:2px}
+.legend .sw.dash{background:repeating-linear-gradient(90deg,var(--axis) 0 3px,transparent 3px 6px)}
+
+/* calendar */
+.cal-head{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+.cal-title{font-size:17px; font-weight:900; font-family:"Zen Kaku Gothic New",sans-serif}
+.cal-grid{display:grid; grid-template-columns:34px repeat(7,1fr); gap:4px}
+.cal-dow{font-size:10.5px; color:var(--mut); text-align:center; font-weight:700; padding:2px 0}
+.cal-wk{
+  writing-mode:vertical-rl; font-size:9.5px; letter-spacing:.05em; color:var(--mut); font-weight:700;
+  border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:52px;
+}
+.cal-cell{
+  background:var(--card); border:1px solid var(--line2); border-radius:8px; min-height:52px;
+  padding:3px 4px; font-size:11px; cursor:pointer; position:relative; overflow:hidden;
+}
+.cal-cell:hover{border-color:var(--accent)}
+.cal-cell .d{font-weight:700; color:var(--mut); font-size:11px}
+.cal-cell.out{opacity:.35}
+.cal-cell.today{border:2px solid var(--accent)}
+.cal-cell.today .d{color:var(--accent)}
+.cal-cell .km{display:block; margin-top:1px; font-size:13px; font-weight:600; color:var(--c1); line-height:1.1}
+.cal-cell .km small{font-size:9px; font-weight:500; color:var(--mut); font-family:"Noto Sans JP",sans-serif}
+.cal-cell.race{background:var(--coral-soft); border-color:var(--coral)}
+.cal-cell .rc{font-size:9px; color:var(--coral); font-weight:700; display:block; line-height:1.2}
+.cal-cell .pin{position:absolute; right:3px; top:3px; width:6px; height:6px; border-radius:50%}
+@media(max-width:720px){ .cal-grid{grid-template-columns:20px repeat(7,1fr)} .cal-cell{min-height:46px} }
+
+/* plan */
+.week-now{outline:2px solid var(--accent); outline-offset:-2px; border-radius:8px}
+.prog{height:6px; background:var(--card2); border-radius:4px; overflow:hidden; min-width:70px}
+.prog i{display:block; height:100%; background:var(--c1); border-radius:4px}
+.prog i.over{background:var(--warn)}
+.pctxt{font-size:10.5px; color:var(--mut)}
+.wkph{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; vertical-align:0}
+.tw-grid{display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start}
+.tw-w{font-family:Oswald,sans-serif; font-size:38px; font-weight:600; color:var(--accent); line-height:1}
+.tw-kv{display:flex; gap:18px; flex-wrap:wrap; margin:8px 0 6px}
+.tw-kv .kv .k{font-size:10.5px; color:var(--faint); letter-spacing:.06em; font-weight:700}
+.tw-kv .kv .v{font-size:18px; font-weight:600}
+.tw-kv .kv .v small{font-size:11px; color:var(--mut); font-weight:500; font-family:"Noto Sans JP",sans-serif}
+.today-menu{background:var(--card2); border-radius:9px; padding:8px 12px; font-size:13px; margin-top:8px}
+.today-menu b{color:var(--accent)}
+details.sec{border:1px solid var(--line); border-radius:var(--r); background:var(--card); margin-bottom:12px; box-shadow:var(--shadow)}
+details.sec>summary{
+  cursor:pointer; list-style:none; padding:13px 16px; font-weight:700; font-size:14.5px;
+  font-family:"Zen Kaku Gothic New",sans-serif; display:flex; align-items:center; gap:8px;
+}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary:after{content:"+"; margin-left:auto; color:var(--faint); font-size:16px; font-weight:500}
+details.sec[open]>summary:after{content:"−"}
+details.sec .secbody{padding:0 16px 16px}
+ol.rules{margin:0; padding-left:1.5em; font-size:13px}
+ol.rules li{margin-bottom:7px}
+ol.rules li.hot{color:var(--bad); font-weight:700}
+.gym2{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px}
+@media(max-width:720px){.gym2{grid-template-columns:1fr}}
+.gymcard{border:1px solid var(--line); border-radius:10px; padding:12px}
+.gymcard h3{font-size:13.5px; margin-bottom:8px}
+.gymcard ol{margin:0; padding-left:1.4em; font-size:12.5px}
+.gymcard ol li{margin-bottom:5px}
+.gymcard .prep{font-size:12px; color:var(--mut); margin-bottom:6px}
+.goalrow{display:flex; gap:8px; flex-wrap:wrap}
+.goal{border:1px solid var(--line); border-radius:10px; padding:8px 12px; flex:1; min-width:130px}
+.goal .g-l{font-size:11px; font-weight:700; letter-spacing:.05em}
+.goal .g-v{font-size:16px; font-weight:600}
+.goal .g-s{font-size:11px; color:var(--mut)}
+.plan-note{background:var(--coral-soft); color:var(--coral); border-radius:10px; padding:10px 12px; font-size:12.5px; margin-bottom:12px}
+
+/* modal */
+.overlay{position:fixed; inset:0; background:rgba(10,20,22,.5); z-index:90; display:none}
+.overlay.on{display:block}
+.modal{
+  position:fixed; z-index:95; left:50%; transform:translateX(-50%);
+  bottom:0; width:100%; max-width:560px; max-height:88vh; overflow-y:auto;
+  background:var(--card); border-radius:16px 16px 0 0; padding:18px 18px 26px; display:none;
+  border:1px solid var(--line);
+}
+@media(min-width:721px){ .modal{bottom:auto; top:7vh; border-radius:16px} }
+.modal.on{display:block}
+.modal h3{font-size:16px; margin-bottom:4px}
+.modal .msub{font-size:12px; color:var(--mut); margin-bottom:12px}
+.frow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px}
+.frow.one{grid-template-columns:1fr}
+.fld label{display:block; font-size:11px; font-weight:700; color:var(--mut); letter-spacing:.05em; margin-bottom:3px}
+.fld label .auto{color:var(--accent); font-weight:700}
+.fld input,.fld select,.fld textarea{
+  width:100%; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:var(--bg);
+}
+.fld input:focus{border-color:var(--accent)}
+.fld .hint{font-size:10.5px; color:var(--faint); margin-top:2px}
+.chiprow{display:flex; gap:6px; flex-wrap:wrap; margin-top:4px}
+.chiprow button{
+  border:1px solid var(--line); background:var(--bg); color:var(--mut); font-size:12px; font-weight:700;
+  padding:4px 11px; border-radius:99px;
+}
+.chiprow button.on{background:var(--accent-soft); border-color:var(--accent); color:var(--accent)}
+.modal .mfoot{display:flex; gap:8px; margin-top:14px}
+.modal .mfoot .sp{flex:1}
+.msec{border-top:1px solid var(--line); margin-top:12px; padding-top:12px}
+.msec h4{font-size:13px; margin:0 0 8px; font-family:"Zen Kaku Gothic New",sans-serif}
+.toast{
+  position:fixed; z-index:120; left:50%; transform:translateX(-50%);
+  bottom:calc(76px + env(safe-area-inset-bottom));
+  background:var(--ink); color:var(--bg); font-size:13px; font-weight:700;
+  padding:9px 16px; border-radius:99px; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90vw; text-align:center;
+}
+.toast.on{opacity:1}
+.day-list .rcard{margin-bottom:8px}
+
+/* 写真 */
+.photo-thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+.pthumb{width:64px; height:64px; object-fit:cover; border-radius:9px; border:1px solid var(--line); cursor:pointer; display:block; background:var(--card2)}
+.pthumb.sm{width:52px; height:52px}
+.pthumb-wrap{position:relative}
+.pthumb-wrap .pdel{
+  position:absolute; top:-7px; right:-7px; width:21px; height:21px; border-radius:50%;
+  border:none; background:var(--ink); color:var(--bg); font-size:12px; line-height:1; padding:0;
+}
+.lightbox{position:fixed; inset:0; z-index:150; background:rgba(5,12,14,.88); display:none; align-items:center; justify-content:center; cursor:zoom-out; padding:20px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:100%; max-height:100%; border-radius:10px}
+</style>
+</head>
+<body>
+<header class="app-head">
+  <div class="wrap">
+    <div class="brand">
+      <h1>NAHAランログ</h1>
+      <div class="sub">大山駅・板橋区 — 初フルへの道</div>
+    </div>
+    <div class="head-spacer"></div>
+    <button class="sync-pill" id="syncBadge" title="同期設定"><span class="sync-dot"></span><span class="sync-label" id="syncText">未同期</span></button>
+    <button class="count-pill" id="countPill" title="レースタブへ">
+      <span class="cp-l">NAHAまで</span>
+      <span class="cp-n num" id="countNum">—<small>日</small></span>
+    </button>
+    <button class="iconbtn" id="settingsBtn" title="設定" aria-label="設定">⚙</button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="タブ">
+  <div class="wrap">
+    <button class="tabbtn on" data-tab="record">記録</button>
+    <button class="tabbtn" data-tab="cal">カレンダー</button>
+    <button class="tabbtn" data-tab="race">レース</button>
+    <button class="tabbtn" data-tab="stats">統計</button>
+    <button class="tabbtn" data-tab="plan">計画</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <!-- ============ 記録 ============ -->
+  <section class="tab on" id="tab-record">
+    <div class="btnrow" style="margin-bottom:14px">
+      <button class="btn primary big" id="startRunBtn">▶ ランニング開始</button>
+      <button class="btn" id="addManualBtn">＋ あとから追加</button>
+    </div>
+    <div class="tiles" id="recTiles"></div>
+    <div class="card">
+      <h2>推移グラフ <span class="hnote" id="chartNote"></span></h2>
+      <div class="seg" id="metricSeg" style="margin-bottom:10px">
+        <button data-m="pace" class="on">ペース</button>
+        <button data-m="time">タイム</button>
+        <button data-m="speed">スピード</button>
+        <button data-m="hr">心拍数</button>
+      </div>
+      <div class="chart-box" id="recChart"></div>
+      <div class="legend" id="recLegend"></div>
+    </div>
+    <div class="card">
+      <h2>ランニング タイム記録表</h2>
+      <div class="tscroll rec-table"><table class="dt" id="recTable"></table></div>
+      <div class="rec-cards" id="recCards"></div>
+    </div>
+  </section>
+
+  <!-- ============ カレンダー ============ -->
+  <section class="tab" id="tab-cal">
+    <div class="card">
+      <div class="cal-head">
+        <button class="btn" id="calPrev" aria-label="前の月">‹</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="btn" id="calNext" aria-label="次の月">›</button>
+        <span style="flex:1"></span>
+        <button class="btn ghost" id="calToday">今日</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="legend" id="calLegend" style="margin-top:10px"></div>
+      <div class="note" id="calSummary" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <!-- ============ レース ============ -->
+  <section class="tab" id="tab-race">
+    <div class="card" id="nextRaceCard"></div>
+    <div class="card">
+      <h2>レース別のタイム記録表
+        <span style="flex:1"></span>
+        <button class="btn" id="addRaceBtn">＋ レース追加</button>
+      </h2>
+      <div class="tscroll"><table class="dt" id="raceTable"></table></div>
+      <p class="mini" style="margin:8px 0 0">同じレース名で登録すると「前回タイム」に前回の結果が自動で入ります。</p>
+    </div>
+  </section>
+
+  <!-- ============ 統計 ============ -->
+  <section class="tab" id="tab-stats">
+    <div class="tiles" id="statTiles"></div>
+    <div class="card">
+      <h2>月別ラン距離</h2>
+      <div class="chart-box" id="monthChart"></div>
+    </div>
+    <div class="card">
+      <h2>集計表</h2>
+      <div class="seg" id="aggSeg" style="margin-bottom:10px">
+        <button data-a="week" class="on">週別</button>
+        <button data-a="month">月別</button>
+      </div>
+      <div class="tscroll"><table class="dt" id="aggTable"></table></div>
+      <p class="mini" id="aggNote" style="margin:8px 0 0"></p>
+    </div>
+  </section>
+
+  <!-- ============ 計画 ============ -->
+  <section class="tab" id="tab-plan">
+    <div class="card" id="thisWeekCard"></div>
+    <div class="plan-note">【2026-07-23 見直し】7/21の体調不良・運動禁止を受け、W1休養／W2復帰週に変更。本番12/6は変えず、序盤をゆるめて調整(余裕あり)。まず健康に戻ることが最優先。</div>
+    <div class="card">
+      <h2>目標とペースの目安</h2>
+      <div class="goalrow" id="goalRow"></div>
+      <div class="tscroll" style="margin-top:10px"><table class="dt" id="paceTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>NAHA練習計画(週別) <span class="hnote">実績は記録タブから自動集計</span></h2>
+      <div class="tscroll"><table class="dt" id="planTable"></table></div>
+    </div>
+    <details class="sec" id="secMenu">
+      <summary>曜日別メニュー <span class="chip mut">毎週この型で回す</span></summary>
+      <div class="secbody">
+        <div class="seg" id="phaseSeg" style="margin-bottom:10px"></div>
+        <div class="tscroll"><table class="dt" id="menuTable"></table></div>
+        <ul class="note" style="margin:10px 0 0; padding-left:1.4em">
+          <li>ランの日(火木土)は走るだけでOK。7000歩は走った分でクリア扱い</li>
+          <li>回復週(週別計画で「回復」の週)は、火木土日の量をぜんぶ2〜3割減らす</li>
+          <li>順番の入れ替えはOK(例:日曜が雨→ロングを土曜に)。ただしロングの翌日は走らない</li>
+          <li>気分や体調が乗らない日は「ウォークに格下げ」が正解。7000歩だけ守ればOK</li>
+          <li>今日のロングが何kmかは上の週別計画の当該週の行を見る</li>
+        </ul>
+      </div>
+    </details>
+    <details class="sec" id="secGym">
+      <summary>筋トレの日の中身 <span class="chip mut">週3(月水金)・上半身のみ</span></summary>
+      <div class="secbody">
+        <div class="gym2" id="gymCards"></div>
+        <h3 style="font-size:13.5px; margin:14px 0 8px">進行表(メイン重量・アシスト)</h3>
+        <div class="tscroll"><table class="dt" id="gymProgTable"></table></div>
+        <ul class="note" style="margin:10px 0 0; padding-left:1.4em">
+          <li>やる日は月・水・金。セッションの間隔は48時間以上あける</li>
+          <li>回復週は月曜を休んで週2(水・金)に戻す。高重量の「試し挙げ」もしない</li>
+          <li>「メイン重量」「アシスト」は上の進行表を参照</li>
+          <li>去年12月の到達点:ベンチ50kg×8×3+60kg×2、チンニング自重8回。年内にここへ戻るのが長期目標</li>
+          <li>50kg以上に挑む日は3〜5回の低回数で。「試し挙げ」は月1回まで</li>
+          <li>11月の実戦期後半からは水曜のみ(金曜は7000歩ウォークだけ)に減量</li>
+          <li>スクワット系はなし(脚はランが担当)。膝や股関節に違和感が出た時だけ相談</li>
+        </ul>
+      </div>
+    </details>
+    <details class="sec" id="secRules">
+      <summary>運用ルール <span class="chip coral">いちばん大事</span></summary>
+      <div class="secbody"><ol class="rules" id="rulesList"></ol></div>
+    </details>
+  </section>
+</main>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- 記録の入力モーダル -->
+<div class="modal" id="recModal">
+  <h3 id="recModalTitle">ランニング記録</h3>
+  <div class="msub" id="recModalSub"></div>
+  <div class="frow">
+    <div class="fld"><label>日付 <span id="recDow" class="auto"></span></label><input type="date" id="f_date"></div>
+    <div class="fld"><label>開始時刻</label><input type="time" id="f_time"></div>
+  </div>
+  <div class="frow">
+    <div class="fld">
+      <label>天気</label>
+      <div class="chiprow" id="wxChips"></div>
+    </div>
+    <div class="fld">
+      <label>気温(℃) <span class="auto" id="tempAuto"></span></label>
+      <input type="number" id="f_temp" step="1" inputmode="numeric">
+    </div>
+  </div>
+  <div class="frow">
+    <div class="fld"><label>コース</label><input type="text" id="f_course" list="courseList"><datalist id="courseList"></datalist></div>
+    <div class="fld"><label>メモ</label><input type="text" id="f_note" placeholder="任意"></div>
+  </div>
+  <div class="frow one">
+    <div class="fld">
+      <label>写真 <span class="auto" id="photoNote"></span></label>
+      <div class="btnrow">
+        <button class="btn" id="photoAddBtn" type="button">＋ 写真を追加</button>
+        <input type="file" id="f_photos" accept="image/*" multiple style="display:none">
+      </div>
+      <div class="photo-thumbs" id="photoThumbs"></div>
+      <div class="hint">自動で縮小して保存します(1つの記録に最大4枚)。タップで拡大、×で削除。</div>
+    </div>
+  </div>
+  <hr style="border:none; border-top:1px solid var(--line); margin:12px 0">
+  <div class="frow">
+    <div class="fld"><label>走行距離(km)</label><input type="number" id="f_dist" step="0.01" inputmode="decimal" placeholder="5.00"></div>
+    <div class="fld"><label>タイム</label><input type="text" id="f_dur" inputmode="numeric" placeholder="26:40"><div class="hint">分:秒 (例 26:40、1:02:30)</div></div>
+  </div>
+  <div class="frow">
+    <div class="fld"><label>目標タイム <span class="auto" id="tgtAuto"></span></label><input type="text" id="f_target" inputmode="numeric" placeholder="25:00"><div class="hint">空欄なら 距離×目標ペースで自動計算</div></div>
+    <div class="fld"><label>&nbsp;</label><div class="note" id="liveCalc" style="padding-top:6px"></div></div>
+  </div>
+  <div class="frow">
+    <div class="fld"><label>最高心拍数</label><input type="number" id="f_hrmax" inputmode="numeric"></div>
+    <div class="fld"><label>平均心拍数</label><input type="number" id="f_hravg" inputmode="numeric"></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn danger" id="recDelBtn" style="display:none">削除</button>
+    <span class="sp"></span>
+    <button class="btn" id="recCancelBtn">キャンセル</button>
+    <button class="btn primary" id="recSaveBtn">保存</button>
+  </div>
+</div>
+
+<!-- レースの入力モーダル -->
+<div class="modal" id="raceModal">
+  <h3 id="raceModalTitle">レース記録</h3>
+  <div class="msub">結果タイムが空欄のレースは「予定」として表示されます。</div>
+  <div class="frow">
+    <div class="fld"><label>日付</label><input type="date" id="rf_date"></div>
+    <div class="fld"><label>走行距離(km)</label><input type="number" id="rf_dist" step="0.001" inputmode="decimal"></div>
+  </div>
+  <div class="frow one">
+    <div class="fld"><label>レース名</label><input type="text" id="rf_name" list="raceNameList"><datalist id="raceNameList"></datalist></div>
+  </div>
+  <div class="frow">
+    <div class="fld"><label>目標タイム</label><input type="text" id="rf_target" placeholder="4:00:00"></div>
+    <div class="fld"><label>結果タイム</label><input type="text" id="rf_result" placeholder="走ったら入力"></div>
+  </div>
+  <div class="frow one">
+    <div class="fld"><label>メモ</label><input type="text" id="rf_note"></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn danger" id="raceDelBtn" style="display:none">削除</button>
+    <span class="sp"></span>
+    <button class="btn" id="raceCancelBtn">キャンセル</button>
+    <button class="btn primary" id="raceSaveBtn">保存</button>
+  </div>
+</div>
+
+<!-- 日別詳細モーダル -->
+<div class="modal" id="dayModal">
+  <h3 id="dayModalTitle"></h3>
+  <div class="msub" id="dayModalPlan"></div>
+  <div class="day-list" id="dayModalList"></div>
+  <div class="mfoot">
+    <button class="btn" id="dayAddBtn">＋ この日の記録を追加</button>
+    <span class="sp"></span>
+    <button class="btn" id="dayCloseBtn">閉じる</button>
+  </div>
+</div>
+
+<!-- 設定モーダル -->
+<div class="modal" id="setModal">
+  <h3>設定</h3>
+  <div class="msub" id="setSub"></div>
+  <div class="msec" style="border-top:none; margin-top:0; padding-top:0">
+    <h4>同期(スマホ・他のPCと共有)</h4>
+    <div class="frow one">
+      <div class="fld"><label>Database URL</label><input type="url" id="s_db" placeholder="https://xxxx.firebasedatabase.app"></div>
+    </div>
+    <div class="frow one">
+      <div class="fld"><label>同期コード</label>
+        <div class="btnrow">
+          <input type="text" id="s_code" placeholder="xxxx-xxxx-xxxx" style="flex:1; min-width:150px">
+          <button class="btn" id="genCodeBtn" type="button">コードを生成</button>
+        </div>
+        <div class="hint">同期コードは実質のパスワードです。他人に教えないでください。別の端末では、同じURLとコードを入力すると同じデータに繋がります。</div>
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary" id="syncStartBtn">同期を開始</button>
+      <button class="btn" id="syncStopBtn" style="display:none">同期を停止</button>
+      <span class="note" id="syncStateNote"></span>
+    </div>
+  </div>
+  <div class="msec">
+    <h4>基本設定</h4>
+    <div class="frow">
+      <div class="fld"><label>年齢</label><input type="number" id="s_age" inputmode="numeric"></div>
+      <div class="fld"><label>目標ペース(分:秒/km)</label><input type="text" id="s_pace" placeholder="5:00"></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>デフォルトのコース</label><input type="text" id="s_course"></div>
+      <div class="fld"><label>&nbsp;</label><div class="note" id="s_hrNote" style="padding-top:6px"></div></div>
+    </div>
+  </div>
+  <div class="msec">
+    <h4>バックアップ</h4>
+    <div class="btnrow">
+      <button class="btn" id="backupBtn">データをコピー</button>
+      <button class="btn" id="restoreBtn">貼り付けて復元</button>
+    </div>
+    <div class="frow one" id="restoreArea" style="display:none; margin-top:10px">
+      <div class="fld"><label>バックアップJSONを貼り付け(旧アプリのバックアップも使えます)</label><textarea id="restoreText" rows="4"></textarea>
+      <div class="btnrow" style="margin-top:8px"><button class="btn primary" id="restoreGoBtn">復元する</button></div></div>
+    </div>
+  </div>
+  <div class="mfoot">
+    <span class="sp"></span>
+    <button class="btn" id="setCancelBtn">閉じる</button>
+    <button class="btn primary" id="setSaveBtn">保存</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="ラン写真"></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="application/json" id="seed-state">{"v":1,"t":0,"settings":{"age":33,"targetPaceSec":300,"defaultCourse":"エニタイム大山","hrFactor":0.65,"u":0},"records":[{"id":"r1","date":"2026-07-21","time":"18:30","dist":5.43,"dur":2100,"target":1629,"hrMax":168,"hrAvg":135,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r2","date":"2026-08-09","time":"17:00","dist":4.19,"dur":2100,"target":1257,"hrMax":163,"hrAvg":134,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r3","date":"2026-08-14","time":"18:00","dist":5.02,"dur":2101,"target":1506,"hrMax":188,"hrAvg":152,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r4","date":"2026-08-16","time":"17:30","dist":5.59,"dur":2101,"target":1677,"hrMax":183,"hrAvg":168,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r5","date":"2026-08-19","time":"18:45","dist":3.98,"dur":1500,"target":1194,"hrMax":186,"hrAvg":145,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r6","date":"2026-08-20","time":"19:10","dist":5,"dur":1600,"target":1500,"hrMax":183,"hrAvg":166,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1},{"id":"r7","date":"2026-08-22","time":"20:30","dist":5,"dur":1549,"target":1500,"hrMax":185,"hrAvg":164,"course":"エニタイム大山","weather":"晴れ","temp":null,"note":"","u":1}],"races":[{"id":"race1","date":"2026-12-06","name":"第40回NAHAマラソン","dist":42.195,"target":14400,"result":null,"note":"初フル！","u":1}],"tombstones":{}}</script>
+
+<script>
+/* ================================================================
+   NAHAランログ — 単一ファイルアプリ (GitHub Pages + Firebase RTDB同期)
+   同期方式: REST(fetch+EventSource)のみ。SDK不使用。
+   送信は必ず「/t確認 → 差分あればfetch&merge → PATCH」の順(データ消失防止)。
+   ================================================================ */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------------- 計画データ(定数) ---------------- */
+const PLAN = {
+  race: {date:'2026-12-06', name:'第40回NAHAマラソン', dist:42.195},
+  goals: [
+    {l:'ゴールA', v:'3時間50分', s:'5:27/km・調子が良ければ'},
+    {l:'ゴールB', v:'4時間切り', s:'5:41/km・現実的な狙い'},
+    {l:'ゴールC', v:'完走して楽しむ', s:'歩いてもOK・最低限'}
+  ],
+  paces: [
+    ['イージーラン','心拍135〜150','7:00〜7:30/km'],
+    ['ロング走','会話できる強度','6:30〜7:15/km'],
+    ['テンポ走(9月〜週1)','20〜30分','5:40〜5:50/km']
+  ],
+  weeks: [
+    {w:1, start:'2026-07-20', phase:'強制休養', km:0,  kmLabel:'0', long:null, aim:'★7/21に体調不良→医師より約1週間運動禁止。今週は完全休養。距離ゼロで正解。焦らない'},
+    {w:2, start:'2026-07-27', phase:'復帰週', km:15, kmLabel:'10〜15(様子見)', long:null, aim:'医師の許可が出てから。前半はウォーク、後半に様子見でイージー15〜20分を1〜2回。筋トレはまだ入れない。皮膚と体調を最優先'},
+    {w:3, start:'2026-08-03', phase:'土台づくり', km:20, kmLabel:'20', long:8,  aim:'イージー中心で本格再開。体調と皮膚が落ち着き医師OKなら筋トレも軽く再開(ベンチ30kg×10×3)'},
+    {w:4, start:'2026-08-10', phase:'回復', km:22, kmLabel:'22', long:8,  aim:'疲れ抜き週。よく寝る'},
+    {w:5, start:'2026-08-17', phase:'土台づくり', km:32, kmLabel:'32', long:14, aim:'イージーのみ'},
+    {w:6, start:'2026-08-24', phase:'土台づくり', km:35, kmLabel:'35', long:16, aim:'イージーのみ'},
+    {w:7, start:'2026-08-31', phase:'回復', km:25, kmLabel:'25', long:10, aim:'回復週'},
+    {w:8, start:'2026-09-07', phase:'距離を伸ばす', km:38, kmLabel:'38', long:18, aim:'テンポ走20分(5:45/km)を週1で開始'},
+    {w:9, start:'2026-09-14', phase:'距離を伸ばす', km:42, kmLabel:'42', long:20, aim:'ロング20km到達(ハーフ相当の自信づけ)'},
+    {w:10,start:'2026-09-21', phase:'回復', km:30, kmLabel:'30', long:12, aim:'回復週'},
+    {w:11,start:'2026-09-28', phase:'距離を伸ばす', km:45, kmLabel:'45', long:22, aim:'テンポ走25分'},
+    {w:12,start:'2026-10-05', phase:'距離を伸ばす', km:48, kmLabel:'48', long:24, aim:'テンポ走25〜30分'},
+    {w:13,start:'2026-10-12', phase:'回復', km:32, kmLabel:'32', long:15, aim:'回復週'},
+    {w:14,start:'2026-10-19', phase:'実戦期', km:50, kmLabel:'50', long:26, aim:'ロング終盤5kmをレースペース(5:40)で'},
+    {w:15,start:'2026-10-26', phase:'実戦期', km:52, kmLabel:'52', long:28, aim:'同上。補給(ジェル等)を本番想定で試す'},
+    {w:16,start:'2026-11-02', phase:'回復', km:35, kmLabel:'35', long:18, aim:'回復週'},
+    {w:17,start:'2026-11-09', phase:'実戦期', km:55, kmLabel:'55', long:30, aim:'★30km走(6:15〜6:30/km)。これが最後の山'},
+    {w:18,start:'2026-11-16', phase:'テーパー', km:40, kmLabel:'40', long:20, aim:'量を落とし始める。強度は少し残す'},
+    {w:19,start:'2026-11-23', phase:'テーパー', km:28, kmLabel:'28', long:12, aim:'レースペース感覚の確認のみ'},
+    {w:20,start:'2026-11-30', phase:'レース週', km:15, kmLabel:'15', long:null, aim:'前半おさえる(〜5:45/km)。12/6 本番!'}
+  ]
+};
+const PHASE_CHIP = {'強制休養':'mut','復帰週':'mut','土台づくり':'acc','回復':'good','距離を伸ばす':'warn','実戦期':'coral','テーパー':'ind','レース週':'coral'};
+const PHASE_COL = {'強制休養':'var(--faint)','復帰週':'var(--faint)','土台づくり':'var(--c1)','回復':'var(--good)','距離を伸ばす':'var(--warn)','実戦期':'var(--c2)','テーパー':'var(--c3)','レース週':'var(--c2)'};
+
+const MENU_PHASES = [
+  {key:'p1', name:'土台づくり', range:'7/20〜8/30', from:'2026-07-20', to:'2026-08-30'},
+  {key:'p2', name:'距離を伸ばす', range:'8/31〜10/18', from:'2026-08-31', to:'2026-10-18'},
+  {key:'p3', name:'実戦期', range:'10/19〜11/15', from:'2026-10-19', to:'2026-11-15'},
+  {key:'p4', name:'テーパー', range:'11/16〜本番', from:'2026-11-16', to:'2026-12-06'}
+];
+/* dow: 0=月 … 6=日 / rec=回復週 */
+const MENUS = [
+  {d:'月', base:'筋トレ(軽い日)+7000歩', p1:'筋トレ軽め+7000歩ウォーク', p2:'筋トレ軽め+7000歩ウォーク', p3:'筋トレ軽め+7000歩ウォーク', p4:'7000歩ウォーク(筋トレは水のみ)', rec:'ウォークのみ(筋トレ休み・週2に戻す)'},
+  {d:'火', base:'ラン(イージー)のみ', p1:'イージー30分', p2:'イージー40分', p3:'イージー40分', p4:'イージー30分', rec:'イージー20〜30分(2〜3割減)'},
+  {d:'水', base:'筋トレ(押す日)+7000歩', p1:'ベンチ/チン(押す日)+7000歩ウォーク', p2:'ベンチ/チン(押す日)+7000歩ウォーク', p3:'ベンチ/チン(押す日)+7000歩ウォーク', p4:'筋トレ軽め+7000歩ウォーク', rec:'筋トレ通常(試し挙げなし)+7000歩'},
+  {d:'木', base:'ラン(ポイント練習)のみ', p1:'イージー30〜40分(まだ全部イージーでOK)', p2:'テンポ走20〜30分(5:40〜5:50/km)', p3:'テンポ走30分 or レースペース走(5:40/km)', p4:'レースペース確認 10〜15分だけ', rec:'ポイント練なし。イージー20〜30分'},
+  {d:'金', base:'筋トレ(引く日)+7000歩', p1:'ベンチ/チン(引く日)+7000歩ウォーク', p2:'ベンチ/チン(引く日)+7000歩ウォーク', p3:'週1に減らす場合は水のみ(金は7000歩ウォークだけ)', p4:'7000歩ウォークのみ(筋トレなし)', rec:'筋トレ(引く日・軽め)+7000歩'},
+  {d:'土', base:'ラン(イージー)のみ', p1:'イージー30分', p2:'イージー30〜40分', p3:'イージー40分', p4:'イージー20〜30分', rec:'イージー20〜30分(2〜3割減)'},
+  {d:'日', base:'ロング走のみ(主役)', p1:'8〜16km(週別計画の欄どおり)', p2:'12〜24km(週別計画の欄どおり)', p3:'15〜30km(終盤レースペース+補給練習)', p4:'8〜20km→本番!', rec:'ロング短め(週別計画の欄どおり)'}
+];
+const REC_WEEKS_LABEL = 'W4・7・10・13・16';
+const GYM = [
+  {title:'月曜「軽い日」(パンプ・フォーム)', cls:'ind', prep:'準備: ベンチ 20kg×15(アップ)', items:[
+    'ベンチ 30kg×10×3(フォームとスピード重視。追い込まない)',
+    'チンニング 現在のアシスト×8×2(余裕を残す)',
+    '(余裕があれば)ペクトラルフライ 47kg×8×2'
+  ], time:'所要15〜20分。日曜ロング翌日なので軽く'},
+  {title:'水曜「押す日」(ベンチ強)', cls:'acc', prep:'準備: ベンチ 20kg×15〜20(アップ)', items:[
+    'ベンチ メイン重量×8×3セット(重量は進行表どおり)',
+    'ベンチ (メイン-10kg)×10×2(ボリューム)',
+    'ベンチ 30kg×10〜13×2(パンプ・締め)',
+    'チンニング 現在のアシスト×8×3',
+    'チェストプレス 26kg×10×3(またはペクトラルフライ 47kg×8×3)'
+  ], time:'所要25〜30分'},
+  {title:'金曜「引く日」(ベンチ軽め)', cls:'good', prep:'準備: ベンチ 20kg×15(アップ)', items:[
+    'ベンチ (メイン-10kg)×10×3(フォームとスピード重視)',
+    'チンニング 現在のアシスト×8×3(最終セットだけ限界まで)',
+    'ロー 40〜47kg×10×3',
+    'ラットプル 47kg×8×3',
+    '(余裕があれば)リスト 6kg×20×左右'
+  ], time:'所要25〜30分'}
+];
+const GYM_PROG = [
+  ['8月〜(医師許可後)','ベンチ30kg×10×3','アシスト19kg×8〜10×3','軽く再開。フォーム思い出し優先。体調が落ち着いてから'],
+  ['8/3〜8/16(W3-4)','35kg×8〜10×3','アシスト12kg×8×3','余裕があれば最終セットだけ+2回'],
+  ['8/17〜9/13(W5-8)','40kg×8×3','アシスト5〜7kg×6〜8×3','ベンチは調子の良い日に45kg挑戦OK'],
+  ['9/14〜11/8','40〜45kg×6〜8×3','自重×できる回数×3','以前の水準(50kg×3・自重)に無理なく接近'],
+  ['11/9〜本番','40kg×8×2(週1に減)','アシスト12kg×8×2(週1)','維持モード。脚と回復をランに全振り']
+];
+const RULES = [
+  {t:'毎日7000歩ルーティンは基本キープ。ただし体調不良・医師の運動制限中は7000歩も休む(再開の可否は医師に確認)'},
+  {t:'週の型: 月 筋トレ軽め+7000歩/火 ラン/水 筋トレ+7000歩/木 ラン(ポイント)/金 筋トレ+7000歩/土 ラン/日 ロング走。筋トレの間隔は48時間以上(月水金)'},
+  {t:'気分や体調が乗らない日は迷わず休む・削る。計画の下方修正はいつでも正解、上方修正だけ慎重に'},
+  {t:'同じ場所の痛みが2日続いたらその週のランは中止(ウォークに置き換え)'},
+  {t:'夏の間(〜9月中旬)はトレッドミル中心で問題なし。屋外は朝夕+水分'},
+  {t:'30km走は11月の1回で十分。それ以上は疲労のもと'},
+  {t:'10月末〜11月のロング走で、当日のシューズ・補給・朝食をぜんぶリハーサルする'},
+  {t:'NAHA対策: 当日は暑い(20℃超)想定。序盤の混雑は焦らない/給水は毎回取る/後半のアップダウンに脚を残す'},
+  {t:'記録タブに入力すると、週別計画の「実績」と統計は自動で集計される'},
+  {t:'体に異常(強い倦怠感・眠れない等)が出たら即中止して受診。回復期は「休む勇気」が最優先。計画は健康があってこそ', hot:true}
+];
+
+/* ---------------- ユーティリティ ---------------- */
+const DOW = ['日','月','火','水','木','金','土'];
+const pad = n => String(n).padStart(2,'0');
+const dstr = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayStr = () => dstr(new Date());
+function dparse(s){ const p = s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function dowOf(s){ return DOW[dparse(s).getDay()]; }
+function addDays(s, n){ const d = dparse(s); d.setDate(d.getDate()+n); return dstr(d); }
+function weekStartOf(s){ const d = dparse(s); const k = (d.getDay()+6)%7; d.setDate(d.getDate()-k); return dstr(d); }
+function monthKeyOf(s){ return s.slice(0,7); }
+function mdLabel(s){ const d = dparse(s); return (d.getMonth()+1)+'/'+d.getDate(); }
+function daysBetween(a, b){ return Math.round((dparse(b) - dparse(a)) / 86400000); }
+
+function fmtDur(sec, opt){
+  if(sec == null || !isFinite(sec)) return '—';
+  sec = Math.round(sec);
+  const h = Math.floor(sec/3600), m = Math.floor(sec%3600/60), s = sec%60;
+  if(h > 0 || (opt && opt.forceH)) return h+':'+pad(m)+':'+pad(s);
+  return m+':'+pad(s);
+}
+function fmtPace(spk){
+  if(spk == null || !isFinite(spk) || spk <= 0) return '—';
+  spk = Math.round(spk);
+  return Math.floor(spk/60)+':'+pad(spk%60);
+}
+function parseDur(str){
+  if(str == null) return null;
+  str = String(str).trim().replace(/：/g,':');
+  if(!str) return null;
+  const parts = str.split(':').map(p => p.trim());
+  if(parts.some(p => p === '' || isNaN(Number(p)))) return null;
+  if(parts.length === 3) return (+parts[0])*3600 + (+parts[1])*60 + (+parts[2]);
+  if(parts.length === 2) return (+parts[0])*60 + (+parts[1]);
+  if(parts.length === 1) return Math.round(parseFloat(parts[0])*60);
+  return null;
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function hrTarget(){ return Math.round((220 - (state.settings.age||33)) * (state.settings.hrFactor||0.65)); }
+
+/* 気温の推定(東京・月別平年値 + 時間帯補正) */
+const TEMP_TBL = [[2,10],[2,11],[5,14],[10,19],[15,23],[19,26],[23,30],[24,31],[21,27],[15,22],[9,17],[4,12]];
+const HOUR_W = [.15,.1,.05,.02,0,0,.05,.15,.3,.45,.6,.75,.85,.95,1,1,.95,.85,.7,.55,.45,.35,.28,.2];
+function estTemp(month, hour){
+  const t = TEMP_TBL[month-1];
+  return Math.round(t[0] + (t[1]-t[0]) * HOUR_W[hour % 24]);
+}
+
+/* ---------------- 状態(localStorage) ---------------- */
+const LS_STATE = 'nahalog.fb.v1', LS_DEV = 'nahalog.dev', LS_PJ = 'nahalog.pj.v1';
+let state = null;
+let devId = null;
+
+function persist(){ try{ localStorage.setItem(LS_STATE, JSON.stringify(state)); }catch(e){} }
+function loadLocal(){
+  let s = null;
+  try{ s = JSON.parse(localStorage.getItem(LS_STATE) || 'null'); }catch(e){}
+  if(!s){ try{ s = JSON.parse($('#seed-state').textContent); }catch(e){} }
+  if(!s) s = {v:1, t:0, settings:{age:33, targetPaceSec:300, defaultCourse:'', hrFactor:0.65, u:0}, records:[], races:[], tombstones:{}};
+  if(!s.tombstones) s.tombstones = {};
+  if(!s.records) s.records = [];
+  if(!s.races) s.races = [];
+  return s;
+}
+function touchRec(data){
+  data.u = Date.now();
+  const i = state.records.findIndex(x => x.id === data.id);
+  if(i >= 0) state.records[i] = data; else state.records.push(data);
+  delete state.tombstones['r_' + data.id];
+  afterChange();
+}
+function removeRec(id){
+  state.records = state.records.filter(x => x.id !== id);
+  state.tombstones['r_' + id] = Date.now();
+  afterChange();
+}
+function touchRace(data){
+  data.u = Date.now();
+  const i = state.races.findIndex(x => x.id === data.id);
+  if(i >= 0) state.races[i] = data; else state.races.push(data);
+  delete state.tombstones['c_' + data.id];
+  afterChange();
+}
+function removeRace(id){
+  state.races = state.races.filter(x => x.id !== id);
+  state.tombstones['c_' + id] = Date.now();
+  afterChange();
+}
+function patchSettings(p){
+  Object.assign(state.settings, p);
+  state.settings.u = Date.now();
+  afterChange();
+}
+function afterChange(){
+  state.t = Date.now();
+  persist();
+  renderAll();
+  schedulePush();
+}
+
+/* ---------------- マージ(レコード単位でu後勝ち + トゥームストーン) ---------------- */
+function asArr(v){
+  if(v == null) return [];
+  return Array.isArray(v) ? v.filter(Boolean) : Object.values(v).filter(Boolean);
+}
+function mergeColl(localArr, remoteV, prefix, tomb){
+  const map = {};
+  localArr.forEach(x => { if(x && x.id) map[x.id] = x; });
+  let changed = false;
+  asArr(remoteV).forEach(r => {
+    if(!r || !r.id) return;
+    const l = map[r.id];
+    if(!l){ map[r.id] = r; changed = true; }
+    else if((r.u||0) > (l.u||0)){ map[r.id] = r; changed = true; }
+  });
+  const out = [];
+  Object.keys(map).forEach(id => {
+    const ts = tomb[prefix + id];
+    if(ts && ts >= (map[id].u||0)){ changed = true; return; } /* 削除が勝つ */
+    out.push(map[id]);
+  });
+  if(out.length !== localArr.length) changed = true;
+  return {arr: out, changed};
+}
+function mergeRemote(remote){
+  if(!remote || typeof remote !== 'object') return false;
+  let changed = false;
+  const tomb = Object.assign({}, state.tombstones);
+  const rt = remote.tombstones || {};
+  Object.keys(rt).forEach(k => { if(!tomb[k] || rt[k] > tomb[k]){ tomb[k] = rt[k]; changed = true; } });
+  state.tombstones = tomb;
+  const r1 = mergeColl(state.records, remote.records, 'r_', tomb);
+  if(r1.changed){ state.records = r1.arr; changed = true; }
+  const r2 = mergeColl(state.races, remote.races, 'c_', tomb);
+  if(r2.changed){ state.races = r2.arr; changed = true; }
+  if(remote.settings && (remote.settings.u||0) > (state.settings.u||0)){
+    const keepSync = state.settings.sync;
+    state.settings = Object.assign({}, remote.settings);
+    if(keepSync) state.settings.sync = keepSync;
+    changed = true;
+  }
+  if((remote.t||0) > (state.t||0)) state.t = remote.t;
+  if(changed){ persist(); renderAll(); }
+  return changed;
+}
+
+/* ---------------- Firebase同期(REST + SSE) ---------------- */
+const sync = {es:null, pollTimer:null, pushTimer:null, refetchTimer:null, lastT:null, lastPushed:'', busy:false};
+function syncConf(){
+  const c = state.settings.sync;
+  if(!c || !c.db || !c.code) return null;
+  return c;
+}
+function roomUrl(sub){
+  const c = syncConf();
+  return c.db + '/r/' + encodeURIComponent(c.code) + (sub || '') + '.json';
+}
+function photoRoomUrl(month, pid){
+  const c = syncConf();
+  return c.db + '/r/' + encodeURIComponent(c.code) + '-p/' + month + '/' + pid + '.json';
+}
+function payloadOf(){
+  return {v:1, from:devId, t:Date.now(), settings:state.settings, records:state.records, races:state.races, tombstones:state.tombstones};
+}
+function cmpStr(){
+  return JSON.stringify([state.settings, state.records, state.races, state.tombstones]);
+}
+function schedulePush(){
+  if(!syncConf()) { setSyncUI('off'); return; }
+  clearTimeout(sync.pushTimer);
+  sync.pushTimer = setTimeout(pushNow, 700);
+}
+async function pushNow(){
+  const c = syncConf();
+  if(!c || sync.busy) return;
+  sync.busy = true;
+  try{
+    /* 1. tだけ確認。取得できなければ送らない(壊れた上書き防止) */
+    let remoteT = null;
+    try{
+      const r = await fetch(roomUrl('/t'), {cache:'no-store'});
+      if(!r.ok) throw 0;
+      remoteT = await r.json();
+    }catch(e){ setSyncUI('offline'); sync.busy = false; return; }
+    /* 2. 変化していれば全体を取り込んでから */
+    if(remoteT != null && remoteT !== sync.lastT){
+      try{
+        const r = await fetch(roomUrl(''), {cache:'no-store'});
+        if(r.ok){ const full = await r.json(); if(full && full.from !== devId) mergeRemote(full); else if(full) sync.lastT = full.t || remoteT; }
+      }catch(e){}
+    }
+    /* 3. 直前送信と同内容ならスキップ */
+    const cmp = cmpStr();
+    if(cmp === sync.lastPushed && remoteT != null){ sync.lastT = remoteT; setSyncUI('on'); sync.busy = false; pushPhotos(); return; }
+    /* 4. トップレベルキー単位のPATCH */
+    const payload = payloadOf();
+    const res = await fetch(roomUrl(''), {method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+    if(!res.ok) throw 0;
+    sync.lastT = payload.t;
+    sync.lastPushed = cmp;
+    state.t = payload.t;
+    persist();
+    setSyncUI('on');
+    pushPhotos();
+  }catch(e){
+    setSyncUI('offline');
+  }finally{
+    sync.busy = false;
+  }
+}
+function scheduleRefetch(){
+  clearTimeout(sync.refetchTimer);
+  sync.refetchTimer = setTimeout(fetchAndMerge, 400);
+}
+async function fetchAndMerge(){
+  const c = syncConf();
+  if(!c) return;
+  try{
+    const r = await fetch(roomUrl(''), {cache:'no-store'});
+    if(!r.ok) return;
+    const full = await r.json();
+    if(full){
+      sync.lastT = full.t || sync.lastT;
+      if(full.from !== devId) mergeRemote(full);
+    }
+    setSyncUI('on');
+  }catch(e){ setSyncUI('offline'); }
+}
+function startSync(){
+  stopSync();
+  const c = syncConf();
+  if(!c){ setSyncUI('off'); return; }
+  fetchAndMerge().then(() => { schedulePush(); });
+  /* SSEストリーム購読 */
+  try{
+    sync.es = new EventSource(roomUrl(''));
+    const onData = ev => {
+      try{
+        const d = JSON.parse(ev.data);
+        if(!d) return;
+        const dat = d.data;
+        if(d.path === '/' && dat){
+          if(dat.from !== devId){ sync.lastT = dat.t || sync.lastT; mergeRemote(dat); }
+          else { sync.lastT = dat.t || sync.lastT; }
+        } else if(d.path === '/t'){
+          if(dat !== sync.lastT) scheduleRefetch();
+        } else {
+          scheduleRefetch();
+        }
+        setSyncUI('on');
+      }catch(e){}
+    };
+    sync.es.addEventListener('put', onData);
+    sync.es.addEventListener('patch', onData);
+    sync.es.addEventListener('open', () => setSyncUI('on'));
+    sync.es.addEventListener('error', () => setSyncUI('offline'));
+  }catch(e){}
+  /* 保険: 60秒ごとにtだけ確認 */
+  sync.pollTimer = setInterval(async () => {
+    const cc = syncConf();
+    if(!cc) return;
+    try{
+      const r = await fetch(roomUrl('/t'), {cache:'no-store'});
+      if(!r.ok) throw 0;
+      const t = await r.json();
+      if(t != null && t !== sync.lastT) scheduleRefetch();
+      pushPhotos();
+    }catch(e){ setSyncUI('offline'); }
+  }, 60000);
+}
+function stopSync(){
+  if(sync.es){ try{ sync.es.close(); }catch(e){} sync.es = null; }
+  clearInterval(sync.pollTimer);
+  clearTimeout(sync.refetchTimer);
+}
+function setSyncUI(st){
+  const b = $('#syncBadge');
+  b.className = 'sync-pill' + (st === 'on' ? ' on' : st === 'offline' ? ' offline' : '');
+  $('#syncText').textContent = st === 'on' ? '同期中' : st === 'offline' ? 'オフライン' : '未同期';
+  b.title = st === 'on' ? '同期中(タップで設定)' : st === 'offline' ? 'オフライン: 端末に保存中。復帰後に自動送信します' : '未同期: この端末のみに保存中(タップで設定)';
+  const n = $('#syncStateNote');
+  if(n) n.textContent = b.title;
+}
+function genSyncCode(){
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let s = '';
+  const rnd = new Uint32Array(12);
+  (window.crypto || {getRandomValues: a => { for(let i=0;i<a.length;i++) a[i] = Math.floor(Math.random()*4294967296); }}).getRandomValues(rnd);
+  for(let i = 0; i < 12; i++){
+    s += chars[rnd[i] % chars.length];
+    if(i === 3 || i === 7) s += '-';
+  }
+  return s;
+}
+
+/* ---------------- 写真(別ルーム・月別・遅延読込) ---------------- */
+let PJcache = null;
+const photoMem = {};
+function readPJ(){
+  if(PJcache) return PJcache;
+  try{ PJcache = JSON.parse(localStorage.getItem(LS_PJ) || '{}'); }catch(e){ PJcache = {}; }
+  return PJcache;
+}
+function writePJ(pj){
+  PJcache = pj;
+  try{ localStorage.setItem(LS_PJ, JSON.stringify(pj)); return true; }catch(e){ return false; }
+}
+function newPid(dateStr){
+  return 'p' + (dateStr || todayStr()).slice(0,7).replace('-','') + 'x' + uid();
+}
+function photoMonthOf(pid){
+  const m = /^p(\d{4})(\d{2})/.exec(pid);
+  return m ? m[1] + '-' + m[2] : null;
+}
+function photoUsedSet(){
+  const s = new Set();
+  state.records.forEach(r => (r.photos || []).forEach(p => s.add(p)));
+  return s;
+}
+function photoSrc(pid){
+  const pj = readPJ();
+  if(pj[pid]) return pj[pid].d;
+  if(photoMem[pid]) return photoMem[pid];
+  return null;
+}
+function photoImgHtml(pid, cls){
+  const src = photoSrc(pid);
+  if(src) return `<img class="pthumb ${cls||''}" loading="lazy" src="${src}" data-lightbox="1" alt="ラン写真">`;
+  return `<img class="pthumb ${cls||''}" data-plazy="${pid}" data-lightbox="1" alt="ラン写真">`;
+}
+function photoThumbsHtml(r, cls){
+  if(!r.photos || !r.photos.length) return '';
+  return '<div class="photo-thumbs">' + r.photos.map(p => photoImgHtml(p, cls)).join('') + '</div>';
+}
+async function loadLazyPhotos(){
+  const c = syncConf();
+  if(!c) return;
+  const imgs = $$('[data-plazy]');
+  for(const img of imgs){
+    const pid = img.getAttribute('data-plazy');
+    img.removeAttribute('data-plazy');
+    const month = photoMonthOf(pid);
+    if(!month){ img.style.display = 'none'; continue; }
+    try{
+      const r = await fetch(photoRoomUrl(month, pid), {cache:'no-store'});
+      if(!r.ok) throw 0;
+      const d = await r.json();
+      if(typeof d === 'string' && d.indexOf('data:image') === 0){
+        photoMem[pid] = d;
+        img.src = d;
+      } else { img.style.display = 'none'; }
+    }catch(e){ img.style.display = 'none'; }
+  }
+}
+async function pushPhotos(){
+  const c = syncConf();
+  if(!c) return;
+  const pj = readPJ();
+  const used = photoUsedSet();
+  for(const pid of Object.keys(pj)){
+    if(pj[pid].pub || !used.has(pid)) continue;
+    const month = photoMonthOf(pid);
+    if(!month) continue;
+    try{
+      const res = await fetch(photoRoomUrl(month, pid), {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(pj[pid].d)});
+      if(res.ok){ const p2 = readPJ(); if(p2[pid]){ p2[pid].pub = 1; writePJ(p2); } }
+    }catch(e){}
+  }
+}
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._tm); toast._tm = setTimeout(() => t.classList.remove('on'), 2400);
+}
+
+/* ---------------- 派生値 ---------------- */
+function recPace(r){ return (r.dist > 0 && r.dur > 0) ? r.dur / r.dist : null; }
+function recSpeed(r){ return (r.dist > 0 && r.dur > 0) ? r.dist / (r.dur/3600) : null; }
+function recTgtPace(r){ return (r.dist > 0 && r.target > 0) ? r.target / r.dist : null; }
+function recTgtSpeed(r){ return (r.dist > 0 && r.target > 0) ? r.dist / (r.target/3600) : null; }
+function recComplete(r){ return r.dist > 0 && r.dur > 0; }
+function sortedRecs(){ return state.records.slice().sort((a,b) => (a.date+(a.time||'')) < (b.date+(b.time||'')) ? -1 : 1); }
+function planWeekOf(dateStr){
+  const ws = weekStartOf(dateStr);
+  let f = null;
+  PLAN.weeks.forEach(w => { if(w.start === ws) f = w; });
+  return f;
+}
+function menuPhaseOf(dateStr){
+  let f = null;
+  MENU_PHASES.forEach(p => { if(dateStr >= p.from && dateStr <= p.to) f = p; });
+  return f;
+}
+function weekKm(ws){
+  return state.records.filter(r => recComplete(r) && weekStartOf(r.date) === ws).reduce((s,r) => s + r.dist, 0);
+}
+function menuFor(dateStr){
+  const mp = menuPhaseOf(dateStr);
+  const pw = planWeekOf(dateStr);
+  const dow = (dparse(dateStr).getDay()+6)%7;
+  const m = MENUS[dow];
+  let label = mp ? m[mp.key] : m.base;
+  const notes = [];
+  if(pw && pw.phase === '回復'){ label = m.rec; notes.push('回復週'); }
+  if(pw && (pw.phase === '強制休養' || pw.phase === '復帰週')) label = pw.phase === '強制休養' ? '完全休養' : '医師OK後、ウォーク〜様子見イージーのみ';
+  if(dow === 6 && pw && pw.long) notes.push('今週のロング目安: ' + pw.long + 'km');
+  return {label, phase: mp ? mp.name : (pw ? pw.phase : ''), notes, planWeek: pw};
+}
+</script>
+
+<script>
+'use strict';
+/* ---------------- UI状態 ---------------- */
+const ui = {tab:'record', metric:'pace', agg:'week', calY:0, calM:0, phaseKey:'p1', editRecId:null, editRaceId:null, wx:'晴れ', dayDate:null, recMode:'start', photoDraft:[]};
+
+/* ---------------- チャート共通 ---------------- */
+const CW=720, CH=250, CL=50, CR=16, CT=16, CB=30;
+function niceTicks(min, max, n){
+  const ticks = []; for(let k=0;k<n;k++) ticks.push(min + (max-min)*k/(n-1)); return ticks;
+}
+function lineChart(el, cfg){
+  const pts = cfg.points, ser = cfg.series;
+  const allVals = [];
+  pts.forEach(p => p.vals.forEach(v => { if(v != null && isFinite(v)) allVals.push(v); }));
+  if(!pts.length || !allVals.length){ el.innerHTML = '<div class="empty">まだ表示できるデータがありません</div>'; return; }
+  let min = Math.min.apply(null, allVals), max = Math.max.apply(null, allVals);
+  if(min === max){ min -= 1; max += 1; }
+  const pad2 = (max-min)*0.1; min -= pad2; max += pad2;
+  const n = pts.length;
+  const X = i => CL + (CW-CL-CR) * (n === 1 ? 0.5 : i/(n-1));
+  const Y = v => cfg.flip
+    ? CT + (v-min)/(max-min)*(CH-CT-CB)
+    : CH-CB - (v-min)/(max-min)*(CH-CT-CB);
+  let g = '';
+  niceTicks(min, max, 4).forEach(tv => {
+    const y = Y(tv);
+    g += `<line x1="${CL}" x2="${CW-CR}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${CL-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="var(--axis)">${cfg.yFmt(tv)}</text>`;
+  });
+  const step = Math.max(1, Math.ceil(n/6));
+  pts.forEach((p,i) => {
+    if(i % step === 0 || i === n-1){
+      g += `<text x="${X(i)}" y="${CH-8}" text-anchor="middle" font-size="10.5" fill="var(--axis)">${esc(p.label)}</text>`;
+    }
+  });
+  ser.forEach((s, si) => {
+    let d = '', open = false;
+    pts.forEach((p,i) => {
+      const v = p.vals[si];
+      if(v == null || !isFinite(v)){ open = false; return; }
+      d += (open ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1) + ' ';
+      open = true;
+    });
+    if(d) g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" ${s.dash ? 'stroke-dasharray="5 4"' : ''} stroke-linecap="round" stroke-linejoin="round"/>`;
+    if(!s.dash) pts.forEach((p,i) => {
+      const v = p.vals[si];
+      if(v == null || !isFinite(v)) return;
+      const last = i === n-1;
+      g += `<circle cx="${X(i)}" cy="${Y(v)}" r="${last?4.5:3.5}" fill="${s.color}" stroke="var(--card)" stroke-width="2"/>`;
+      if(last) g += `<text x="${X(i)}" y="${Y(v)-9}" text-anchor="middle" font-size="11" font-weight="700" fill="${s.color}">${cfg.yFmt(v)}</text>`;
+    });
+  });
+  g += `<line class="xhair" x1="0" x2="0" y1="${CT}" y2="${CH-CB}" stroke="var(--axis)" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="推移グラフ">${g}</svg><div class="tip"></div>`;
+  el._pts = pts.map((p,i) => ({px:X(i), label:p.label, rows: ser.map((s,si) => [s.name, p.vals[si] == null ? '—' : cfg.yFmt(p.vals[si])])}));
+  attachTip(el);
+}
+function roundTop(x, y, w, h, r){
+  r = Math.min(r, w/2, h);
+  return `M${x} ${y+h} L${x} ${y+r} Q${x} ${y} ${x+r} ${y} L${x+w-r} ${y} Q${x+w} ${y} ${x+w} ${y+r} L${x+w} ${y+h} Z`;
+}
+function barChart(el, cfg){
+  const pts = cfg.points;
+  if(!pts.length){ el.innerHTML = '<div class="empty">まだ表示できるデータがありません</div>'; return; }
+  const max = Math.max.apply(null, pts.map(p => p.val)) * 1.15 || 1;
+  const n = pts.length;
+  const slot = (CW-CL-CR)/n;
+  const bw = Math.min(46, slot*0.62);
+  let g = '';
+  niceTicks(0, max, 4).forEach(tv => {
+    const y = CH-CB - tv/max*(CH-CT-CB);
+    g += `<line x1="${CL}" x2="${CW-CR}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${CL-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="var(--axis)">${Math.round(tv)}</text>`;
+  });
+  pts.forEach((p,i) => {
+    const x = CL + slot*i + (slot-bw)/2;
+    const h = Math.max(2, p.val/max*(CH-CT-CB));
+    const y = CH-CB-h;
+    g += `<path d="${roundTop(x, y, bw, h, 4)}" fill="${cfg.color || 'var(--c1)'}"/>`;
+    g += `<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${p.val.toFixed(p.val >= 100 ? 0 : 1)}</text>`;
+    g += `<text x="${x+bw/2}" y="${CH-8}" text-anchor="middle" font-size="10.5" fill="var(--axis)">${esc(p.label)}</text>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="月別距離">${g}</svg><div class="tip"></div>`;
+  el._pts = pts.map((p,i) => ({px:CL + slot*i + slot/2, label:p.full || p.label, rows:[['距離', p.val.toFixed(1)+' km'], ['回数', p.count + ' 回']]}));
+  attachTip(el);
+}
+function attachTip(el){
+  const svg = el.querySelector('svg'), tip = el.querySelector('.tip');
+  const move = ev => {
+    const rect = svg.getBoundingClientRect();
+    const vx = (ev.clientX - rect.left) / rect.width * CW;
+    let best = null, bd = 1e9;
+    el._pts.forEach(p => { const d = Math.abs(p.px - vx); if(d < bd){ bd = d; best = p; } });
+    if(!best || bd > 60){ hide(); return; }
+    tip.innerHTML = `<b>${esc(best.label)}</b><br>` + best.rows.map(r => `${esc(r[0])}: <b>${esc(r[1])}</b>`).join('<br>');
+    tip.style.display = 'block';
+    tip.style.left = (best.px / CW * rect.width) + 'px';
+    tip.style.top = (rect.height * 0.28) + 'px';
+    const xh = svg.querySelector('.xhair');
+    if(xh){ xh.setAttribute('x1', best.px); xh.setAttribute('x2', best.px); xh.setAttribute('visibility', 'visible'); }
+  };
+  const hide = () => {
+    tip.style.display = 'none';
+    const xh = svg.querySelector('.xhair'); if(xh) xh.setAttribute('visibility', 'hidden');
+  };
+  svg.addEventListener('pointermove', move);
+  svg.addEventListener('pointerdown', move);
+  svg.addEventListener('pointerleave', hide);
+}
+
+/* ---------------- ヘッダー ---------------- */
+function nextRace(){
+  const t = todayStr();
+  const up = state.races.filter(r => r.date >= t && !r.result).sort((a,b) => a.date < b.date ? -1 : 1);
+  return up[0] || null;
+}
+function renderHeader(){
+  const r = nextRace();
+  const el = $('#countNum');
+  if(r){
+    const d = daysBetween(todayStr(), r.date);
+    el.innerHTML = d === 0 ? '本番!' : d + '<small>日</small>';
+    $('#countPill').title = r.name + 'へ';
+  } else {
+    el.innerHTML = '—<small>日</small>';
+  }
+}
+
+/* ---------------- 記録タブ ---------------- */
+function renderRecordTab(){
+  const recs = sortedRecs().filter(recComplete);
+  const t = todayStr(), ws = weekStartOf(t), mk = monthKeyOf(t);
+  const wk = recs.filter(r => weekStartOf(r.date) === ws);
+  const mo = recs.filter(r => monthKeyOf(r.date) === mk);
+  const all = recs.reduce((s,r) => s + r.dist, 0);
+  let best = null;
+  recs.forEach(r => { const p = recPace(r); if(p && (!best || p < best.p)) best = {p, r}; });
+  $('#recTiles').innerHTML = `
+    <div class="tile"><div class="t-l">今週</div><div class="t-v num">${wk.reduce((s,r)=>s+r.dist,0).toFixed(1)}<small>km</small></div><div class="t-s">${wk.length}回</div></div>
+    <div class="tile"><div class="t-l">今月</div><div class="t-v num">${mo.reduce((s,r)=>s+r.dist,0).toFixed(1)}<small>km</small></div><div class="t-s">${mo.length}回</div></div>
+    <div class="tile"><div class="t-l">累計</div><div class="t-v num">${all.toFixed(1)}<small>km</small></div><div class="t-s">${recs.length}回</div></div>
+    <div class="tile"><div class="t-l">ベストペース</div><div class="t-v num">${best ? fmtPace(best.p) : '—'}<small>/km</small></div><div class="t-s">${best ? mdLabel(best.r.date) + '・' + best.r.dist.toFixed(2) + 'km' : ''}</div></div>`;
+  renderRecChart();
+  renderRecTable();
+}
+function renderRecChart(){
+  const recs = sortedRecs().filter(recComplete).slice(-20);
+  const box = $('#recChart'), lg = $('#recLegend');
+  $('#chartNote').textContent = recs.length ? '直近' + recs.length + '回' : '';
+  const label = r => mdLabel(r.date);
+  const m = ui.metric;
+  if(m === 'pace'){
+    lineChart(box, {flip:true, yFmt:fmtPace,
+      points: recs.map(r => ({label:label(r), vals:[recPace(r), recTgtPace(r)]})),
+      series: [{name:'ペース', color:'var(--c1)'}, {name:'目標ペース', color:'var(--axis)', dash:true}]});
+    lg.innerHTML = legendHtml([['var(--c1)','ペース(分/km)'], ['dash','目標ペース']]) + '<span class="li mini">↑上ほど速い</span>';
+  } else if(m === 'time'){
+    lineChart(box, {yFmt:s => fmtDur(s),
+      points: recs.map(r => ({label:label(r), vals:[r.dur, r.target]})),
+      series: [{name:'タイム', color:'var(--c1)'}, {name:'目標タイム', color:'var(--axis)', dash:true}]});
+    lg.innerHTML = legendHtml([['var(--c1)','タイム'], ['dash','目標タイム']]);
+  } else if(m === 'speed'){
+    lineChart(box, {yFmt:v => v.toFixed(1),
+      points: recs.map(r => ({label:label(r), vals:[recSpeed(r), recTgtSpeed(r)]})),
+      series: [{name:'スピード', color:'var(--c1)'}, {name:'目標', color:'var(--axis)', dash:true}]});
+    lg.innerHTML = legendHtml([['var(--c1)','スピード(km/h)'], ['dash','目標スピード']]);
+  } else {
+    const tHr = hrTarget();
+    lineChart(box, {yFmt:v => Math.round(v),
+      points: recs.map(r => ({label:label(r), vals:[r.hrMax, r.hrAvg, tHr]})),
+      series: [{name:'最高心拍', color:'var(--c2)'}, {name:'平均心拍', color:'var(--c1)'}, {name:'目標心拍', color:'var(--axis)', dash:true}]});
+    lg.innerHTML = legendHtml([['var(--c2)','最高心拍'], ['var(--c1)','平均心拍'], ['dash','目標心拍(' + tHr + ')']]);
+  }
+}
+function legendHtml(items){
+  return items.map(it => `<span class="li"><span class="sw ${it[0]==='dash'?'dash':''}" style="${it[0]==='dash'?'':'background:'+it[0]}"></span>${esc(it[1])}</span>`).join('');
+}
+function judgeChip(r){
+  if(!recComplete(r)) return '<span class="chip acc">結果待ち</span>';
+  if(!r.target) return '<span class="chip mut">—</span>';
+  return r.dur <= r.target ? '<span class="chip good">達成</span>' : '<span class="chip warn">未達</span>';
+}
+function renderRecTable(){
+  const recs = sortedRecs().reverse();
+  const tbl = $('#recTable');
+  if(!recs.length){ tbl.innerHTML = ''; $('#recCards').innerHTML = '<div class="empty">「ランニング開始」を押すと最初の記録が作れます</div>'; return; }
+  let h = `<tr><th>日付</th><th>時刻</th><th class="r">距離</th><th class="r">タイム</th><th class="r">目標</th><th>判定</th><th class="r">ペース</th><th class="r">目標ﾍﾟｰｽ</th><th class="r">ｽﾋﾟｰﾄﾞ</th><th class="r">最高HR</th><th class="r">平均HR</th><th>天気</th><th class="r">気温</th><th>コース</th><th>メモ</th></tr>`;
+  recs.forEach(r => {
+    h += `<tr class="click" data-rec="${r.id}">
+      <td><b>${mdLabel(r.date)}</b> <span class="mini">(${dowOf(r.date)})</span></td>
+      <td class="tnum">${esc(r.time || '—')}</td>
+      <td class="r tnum">${r.dist ? r.dist.toFixed(2) : '—'}</td>
+      <td class="r tnum"><b>${fmtDur(r.dur)}</b></td>
+      <td class="r tnum">${fmtDur(r.target)}</td>
+      <td>${judgeChip(r)}</td>
+      <td class="r tnum">${fmtPace(recPace(r))}</td>
+      <td class="r tnum">${fmtPace(recTgtPace(r))}</td>
+      <td class="r tnum">${recSpeed(r) ? recSpeed(r).toFixed(1) : '—'}</td>
+      <td class="r tnum">${r.hrMax || '—'}</td>
+      <td class="r tnum">${r.hrAvg || '—'}</td>
+      <td>${esc(r.weather || '—')}</td>
+      <td class="r tnum">${r.temp == null ? '—' : r.temp + '℃'}</td>
+      <td>${esc(r.course || '—')}</td>
+      <td class="mini">${r.photos && r.photos.length ? '📷' + r.photos.length + ' ' : ''}${esc(r.note || '')}</td></tr>`;
+  });
+  tbl.innerHTML = h;
+  $('#recCards').innerHTML = recs.map(r => `
+    <div class="rcard ${recComplete(r) ? '' : 'pendfill'}" data-rec="${r.id}">
+      <div class="r1"><span class="rdate">${mdLabel(r.date)} (${dowOf(r.date)})</span><span class="rtime">${esc(r.time || '')}</span><span class="sp"></span>${judgeChip(r)}</div>
+      ${recComplete(r) ? `
+      <div class="r2">
+        <div class="kv"><div class="k">距離</div><div class="v num">${r.dist.toFixed(2)}<small>km</small></div></div>
+        <div class="kv"><div class="k">タイム</div><div class="v num">${fmtDur(r.dur)}</div></div>
+        <div class="kv"><div class="k">ペース</div><div class="v num">${fmtPace(recPace(r))}<small>/km</small></div></div>
+        <div class="kv"><div class="k">心拍</div><div class="v num">${r.hrAvg || '—'}<small>/${r.hrMax || '—'}</small></div></div>
+      </div>` : '<div class="note">タップして距離とタイムを入力</div>'}
+      <div class="rmeta">${esc(r.weather || '')}${r.temp == null ? '' : ' ' + r.temp + '℃'} · ${esc(r.course || '')}${r.note ? ' · ' + esc(r.note) : ''}</div>
+      ${photoThumbsHtml(r, 'sm')}
+    </div>`).join('');
+  loadLazyPhotos();
+}
+</script>
+
+<script>
+'use strict';
+/* ---------------- カレンダー ---------------- */
+function renderCalendar(){
+  const y = ui.calY, m = ui.calM;
+  $('#calTitle').textContent = y + '年' + (m+1) + '月';
+  const first = new Date(y, m, 1), last = new Date(y, m+1, 0);
+  const start = weekStartOf(dstr(first));
+  const today = todayStr();
+  const recsBy = {};
+  state.records.filter(recComplete).forEach(r => { (recsBy[r.date] = recsBy[r.date] || []).push(r); });
+  const pendBy = {};
+  state.records.filter(r => !recComplete(r)).forEach(r => { pendBy[r.date] = true; });
+  const raceBy = {};
+  state.races.forEach(r => { (raceBy[r.date] = raceBy[r.date] || []).push(r); });
+  let h = '<div class="cal-dow"></div>' + ['月','火','水','木','金','土','日'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let cur = start;
+  while(dparse(cur) <= last){
+    const pw = planWeekOf(cur);
+    h += `<div class="cal-wk" style="${pw ? 'background:color-mix(in srgb, '+PHASE_COL[pw.phase]+' 14%, transparent); color:'+PHASE_COL[pw.phase] : ''}" title="${pw ? esc(pw.phase + ' 目標' + pw.kmLabel + 'km') : ''}">${pw ? 'W'+pw.w : ''}</div>`;
+    for(let i = 0; i < 7; i++){
+      const ds = addDays(cur, i);
+      const d = dparse(ds);
+      const out = d.getMonth() !== m;
+      const runs = recsBy[ds] || [];
+      const km = runs.reduce((s,r) => s + r.dist, 0);
+      const races = raceBy[ds] || [];
+      h += `<div class="cal-cell ${out?'out':''} ${ds===today?'today':''} ${races.length?'race':''}" data-day="${ds}">
+        <span class="d">${d.getDate()}</span>
+        ${races.length ? `<span class="rc">${esc(races[0].name.replace(/第\d+回/, ''))}</span>` : ''}
+        ${km ? `<span class="km">${km.toFixed(1)}<small>km</small></span>` : ''}
+        ${pendBy[ds] ? '<span class="pin" style="background:var(--accent)"></span>' : ''}
+      </div>`;
+    }
+    cur = addDays(cur, 7);
+  }
+  $('#calGrid').innerHTML = h;
+  const moRecs = state.records.filter(r => recComplete(r) && r.date.slice(0,7) === (y + '-' + pad(m+1)));
+  const moKm = moRecs.reduce((s,r) => s + r.dist, 0);
+  $('#calSummary').textContent = (m+1) + '月: ' + moKm.toFixed(1) + 'km / ' + moRecs.length + '回' + (moRecs.length ? ' / 最長 ' + Math.max.apply(null, moRecs.map(r => r.dist)).toFixed(1) + 'km' : '');
+  $('#calLegend').innerHTML = ['土台づくり','距離を伸ばす','実戦期','テーパー','回復']
+    .map(p => `<span class="li"><span class="sw" style="background:${PHASE_COL[p]}"></span>${p}</span>`).join('')
+    + '<span class="li"><span class="sw" style="background:var(--c2)"></span>レース日</span>';
+}
+function openDayModal(ds){
+  ui.dayDate = ds;
+  $('#dayModalTitle').textContent = (dparse(ds).getMonth()+1) + '月' + dparse(ds).getDate() + '日(' + dowOf(ds) + ')';
+  const mn = menuFor(ds);
+  const pw = mn.planWeek;
+  $('#dayModalPlan').innerHTML =
+    (pw ? `<span class="chip ${PHASE_CHIP[pw.phase] || 'mut'}">W${pw.w} ${esc(pw.phase)}</span> ` : '')
+    + '予定: <b>' + esc(mn.label) + '</b>'
+    + (mn.notes.length ? '<br><span class="mini">' + mn.notes.map(esc).join(' / ') + '</span>' : '');
+  const recs = state.records.filter(r => r.date === ds).sort((a,b) => (a.time||'') < (b.time||'') ? -1 : 1);
+  const races = state.races.filter(r => r.date === ds);
+  $('#dayModalList').innerHTML =
+    races.map(r => `<div class="rcard" data-race="${r.id}"><div class="r1"><span class="rdate">🏁 ${esc(r.name)}</span><span class="sp"></span>${r.result ? '<span class="chip good">' + fmtDur(r.result, {forceH:true}) + '</span>' : '<span class="chip coral">予定</span>'}</div></div>`).join('')
+    + (recs.length ? recs.map(r => `
+      <div class="rcard ${recComplete(r) ? '' : 'pendfill'}" data-rec="${r.id}">
+        <div class="r1"><span class="rtime">${esc(r.time || '')}</span><span class="sp"></span>${judgeChip(r)}</div>
+        ${recComplete(r) ? `<div class="r2">
+          <div class="kv"><div class="k">距離</div><div class="v num">${r.dist.toFixed(2)}<small>km</small></div></div>
+          <div class="kv"><div class="k">タイム</div><div class="v num">${fmtDur(r.dur)}</div></div>
+          <div class="kv"><div class="k">ペース</div><div class="v num">${fmtPace(recPace(r))}<small>/km</small></div></div>
+        </div>` : '<div class="note">タップして結果を入力</div>'}
+        ${photoThumbsHtml(r, 'sm')}
+      </div>`).join('') : (races.length ? '' : '<div class="empty">この日の記録はありません</div>'));
+  openModal('dayModal');
+  loadLazyPhotos();
+}
+
+/* ---------------- レースタブ ---------------- */
+function renderRaceTab(){
+  const nr = nextRace();
+  const card = $('#nextRaceCard');
+  if(nr){
+    const d = daysBetween(todayStr(), nr.date);
+    const isNaha = nr.name.indexOf('NAHA') >= 0 || nr.name.indexOf('那覇') >= 0;
+    card.innerHTML = `
+      <h2><span class="chip coral">次のレース</span> ${esc(nr.name)}</h2>
+      <div class="tw-grid">
+        <div><div class="tw-w" style="color:var(--coral)">${d}<span style="font-size:16px">日</span></div><div class="mini">あと</div></div>
+        <div>
+          <div class="tw-kv">
+            <div class="kv"><div class="k">開催日</div><div class="v">${mdLabel(nr.date)}<small>(${dowOf(nr.date)})</small></div></div>
+            <div class="kv"><div class="k">距離</div><div class="v num">${nr.dist ? nr.dist.toFixed(3) : '—'}<small>km</small></div></div>
+            <div class="kv"><div class="k">目標</div><div class="v num">${fmtDur(nr.target, {forceH:true})}</div></div>
+            <div class="kv"><div class="k">必要ペース</div><div class="v num">${nr.target && nr.dist ? fmtPace(nr.target/nr.dist) : '—'}<small>/km</small></div></div>
+          </div>
+          ${isNaha ? '<div class="goalrow">' + PLAN.goals.map((g,i) => `<div class="goal"><div class="g-l" style="color:${['var(--coral)','var(--accent)','var(--good)'][i]}">${esc(g.l)}</div><div class="g-v">${esc(g.v)}</div><div class="g-s">${esc(g.s)}</div></div>`).join('') + '</div>' : ''}
+          ${nr.note ? `<div class="note" style="margin-top:8px">${esc(nr.note)}</div>` : ''}
+        </div>
+      </div>`;
+  } else {
+    card.innerHTML = '<h2>次のレース</h2><div class="empty">予定されているレースはありません。「＋レース追加」から登録できます。</div>';
+  }
+  const races = state.races.slice().sort((a,b) => a.date < b.date ? 1 : -1);
+  let h = `<tr><th>日付</th><th>レース名</th><th class="r">距離</th><th class="r">目標</th><th class="r">結果</th><th class="r">ペース</th><th class="r">前回</th><th class="r">前回比</th><th>状態</th></tr>`;
+  races.forEach(r => {
+    const prev = state.races.filter(x => x.name === r.name && x.date < r.date && x.result).sort((a,b) => a.date < b.date ? 1 : -1)[0];
+    let diff = '—';
+    if(prev && r.result){
+      const dl = r.result - prev.result;
+      diff = dl <= 0 ? `<span class="chip good">−${fmtDur(-dl)}</span>` : `<span class="chip warn">+${fmtDur(dl)}</span>`;
+    }
+    const st = r.result ? '<span class="chip good">完走</span>' : (r.date >= todayStr() ? '<span class="chip coral">予定</span>' : '<span class="chip mut">未入力</span>');
+    h += `<tr class="click" data-race="${r.id}">
+      <td><b>${r.date.slice(0,4)}/${mdLabel(r.date)}</b></td>
+      <td>${esc(r.name)}</td>
+      <td class="r tnum">${r.dist ? r.dist : '—'}</td>
+      <td class="r tnum">${fmtDur(r.target, r.target >= 3600 ? {forceH:true} : null)}</td>
+      <td class="r tnum"><b>${fmtDur(r.result, r.result >= 3600 ? {forceH:true} : null)}</b></td>
+      <td class="r tnum">${r.result && r.dist ? fmtPace(r.result/r.dist) : '—'}</td>
+      <td class="r tnum">${prev ? fmtDur(prev.result, {forceH:true}) : '—'}</td>
+      <td class="r">${diff}</td>
+      <td>${st}</td></tr>`;
+  });
+  $('#raceTable').innerHTML = h;
+}
+
+/* ---------------- 統計タブ ---------------- */
+function aggregate(keyFn){
+  const map = {};
+  state.records.filter(recComplete).forEach(r => {
+    const k = keyFn(r.date);
+    const a = map[k] = map[k] || {count:0, km:0, sec:0, hrs:[], maxDist:0};
+    a.count++; a.km += r.dist; a.sec += r.dur;
+    if(r.hrAvg) a.hrs.push(r.hrAvg);
+    if(r.dist > a.maxDist) a.maxDist = r.dist;
+  });
+  return map;
+}
+function renderStatsTab(){
+  const recs = state.records.filter(recComplete);
+  const total = recs.reduce((s,r) => s + r.dist, 0);
+  const yr = todayStr().slice(0,4);
+  const yrKm = recs.filter(r => r.date.slice(0,4) === yr).reduce((s,r) => s + r.dist, 0);
+  const byMonth = aggregate(monthKeyOf);
+  const months = Object.keys(byMonth).sort();
+  let bestMonth = null;
+  months.forEach(k => { if(!bestMonth || byMonth[k].km > byMonth[bestMonth].km) bestMonth = k; });
+  let longest = null;
+  recs.forEach(r => { if(!longest || r.dist > longest.dist) longest = r; });
+  $('#statTiles').innerHTML = `
+    <div class="tile"><div class="t-l">総距離</div><div class="t-v num">${total.toFixed(1)}<small>km</small></div><div class="t-s">${recs.length}回</div></div>
+    <div class="tile"><div class="t-l">今年(${yr})</div><div class="t-v num">${yrKm.toFixed(1)}<small>km</small></div></div>
+    <div class="tile"><div class="t-l">月間最高</div><div class="t-v num">${bestMonth ? byMonth[bestMonth].km.toFixed(1) : '—'}<small>km</small></div><div class="t-s">${bestMonth ? bestMonth.slice(0,4) + '年' + parseInt(bestMonth.slice(5),10) + '月' : ''}</div></div>
+    <div class="tile"><div class="t-l">最長ラン</div><div class="t-v num">${longest ? longest.dist.toFixed(1) : '—'}<small>km</small></div><div class="t-s">${longest ? mdLabel(longest.date) : ''}</div></div>`;
+  barChart($('#monthChart'), {
+    color:'var(--c1)',
+    points: months.map(k => ({label: parseInt(k.slice(5),10) + '月', full: k.slice(0,4) + '年' + parseInt(k.slice(5),10) + '月', val: byMonth[k].km, count: byMonth[k].count}))
+  });
+  renderAggTable();
+}
+function renderAggTable(){
+  const tbl = $('#aggTable');
+  if(ui.agg === 'week'){
+    const byWeek = aggregate(weekStartOf);
+    const keys = Object.keys(byWeek).sort().reverse();
+    let h = `<tr><th>週初め(月)</th><th>フェーズ</th><th class="r">回数</th><th class="r">距離</th><th class="r">時間</th><th class="r">平均ﾍﾟｰｽ</th><th class="r">平均心拍</th><th class="r">最長</th><th>計画比</th></tr>`;
+    keys.forEach(k => {
+      const a = byWeek[k];
+      let pw = null;
+      PLAN.weeks.forEach(w => { if(w.start === k) pw = w; });
+      const pct = pw && pw.km > 0 ? a.km/pw.km*100 : null;
+      h += `<tr ${k === weekStartOf(todayStr()) ? 'class="rowNow"' : ''}>
+        <td><b>${mdLabel(k)}</b><span class="mini">〜${mdLabel(addDays(k,6))}</span></td>
+        <td>${pw ? `<span class="chip ${PHASE_CHIP[pw.phase] || 'mut'}">W${pw.w} ${esc(pw.phase)}</span>` : '—'}</td>
+        <td class="r tnum">${a.count}</td>
+        <td class="r tnum"><b>${a.km.toFixed(1)}</b>km</td>
+        <td class="r tnum">${fmtDur(a.sec, a.sec >= 3600 ? {forceH:true} : null)}</td>
+        <td class="r tnum">${fmtPace(a.sec/a.km)}</td>
+        <td class="r tnum">${a.hrs.length ? Math.round(a.hrs.reduce((s,v)=>s+v,0)/a.hrs.length) : '—'}</td>
+        <td class="r tnum">${a.maxDist.toFixed(1)}km</td>
+        <td>${pct == null ? '—' : `<div class="prog" title="計画${pw.kmLabel}km"><i style="width:${Math.min(100,pct)}%" class="${pct>130?'over':''}"></i></div><span class="pctxt">${Math.round(pct)}% / ${pw.kmLabel}km</span>`}</td></tr>`;
+    });
+    tbl.innerHTML = h;
+    $('#aggNote').textContent = '平均ペース = 合計時間 ÷ 合計距離。平均心拍は各ランの平均心拍の単純平均。計画比はNAHA練習計画の週間距離目安に対する実績。';
+  } else {
+    const byMonth = aggregate(monthKeyOf);
+    const keys = Object.keys(byMonth).sort().reverse();
+    let h = `<tr><th>年月</th><th class="r">回数</th><th class="r">距離</th><th class="r">時間</th><th class="r">平均ﾍﾟｰｽ</th><th class="r">平均心拍</th><th class="r">最長</th></tr>`;
+    keys.forEach(k => {
+      const a = byMonth[k];
+      h += `<tr ${k === monthKeyOf(todayStr()) ? 'class="rowNow"' : ''}>
+        <td><b>${k.slice(0,4)}年${parseInt(k.slice(5),10)}月</b></td>
+        <td class="r tnum">${a.count}</td>
+        <td class="r tnum"><b>${a.km.toFixed(1)}</b>km</td>
+        <td class="r tnum">${fmtDur(a.sec, a.sec >= 3600 ? {forceH:true} : null)}</td>
+        <td class="r tnum">${fmtPace(a.sec/a.km)}</td>
+        <td class="r tnum">${a.hrs.length ? Math.round(a.hrs.reduce((s,v)=>s+v,0)/a.hrs.length) : '—'}</td>
+        <td class="r tnum">${a.maxDist.toFixed(1)}km</td></tr>`;
+    });
+    tbl.innerHTML = h;
+    $('#aggNote').textContent = '平均ペース = 合計時間 ÷ 合計距離。平均心拍は各ランの平均心拍の単純平均。';
+  }
+}
+
+/* ---------------- 計画タブ ---------------- */
+function renderPlanTab(){
+  const t = todayStr();
+  const pw = planWeekOf(t);
+  const twc = $('#thisWeekCard');
+  if(pw){
+    const act = weekKm(pw.start);
+    const pct = pw.km > 0 ? Math.min(100, act/pw.km*100) : 0;
+    const mn = menuFor(t);
+    twc.innerHTML = `
+      <h2>今週のフォーカス <span class="hnote">${mdLabel(pw.start)}〜${mdLabel(addDays(pw.start,6))}</span></h2>
+      <div class="tw-grid">
+        <div><div class="tw-w">W${pw.w}</div><span class="chip ${PHASE_CHIP[pw.phase] || 'mut'}">${esc(pw.phase)}</span></div>
+        <div>
+          <div class="tw-kv">
+            <div class="kv"><div class="k">週間目標</div><div class="v num">${pw.kmLabel}<small>km</small></div></div>
+            <div class="kv"><div class="k">実績</div><div class="v num" style="color:var(--accent)">${act.toFixed(1)}<small>km</small></div></div>
+            <div class="kv"><div class="k">ロング走</div><div class="v num">${pw.long ? pw.long : '—'}<small>${pw.long ? 'km' : ''}</small></div></div>
+          </div>
+          <div class="prog" style="max-width:340px"><i style="width:${pct}%"></i></div>
+          <div class="note" style="margin-top:6px">${esc(pw.aim)}</div>
+          <div class="today-menu">きょう(${dowOf(t)}): <b>${esc(mn.label)}</b>${mn.notes.length ? ' <span class="mini">' + mn.notes.map(esc).join(' / ') + '</span>' : ''}</div>
+        </div>
+      </div>`;
+  } else {
+    twc.innerHTML = '<h2>今週のフォーカス</h2><div class="empty">練習計画の期間外です</div>';
+  }
+  $('#goalRow').innerHTML = PLAN.goals.map((g,i) => `<div class="goal"><div class="g-l" style="color:${['var(--coral)','var(--accent)','var(--good)'][i]}">${esc(g.l)}</div><div class="g-v">${esc(g.v)}</div><div class="g-s">${esc(g.s)}</div></div>`).join('');
+  $('#paceTable').innerHTML = `<tr><th>種別</th><th>強度</th><th>ペース</th></tr>` + PLAN.paces.map(p => `<tr><td><b>${esc(p[0])}</b></td><td>${esc(p[1])}</td><td class="tnum">${esc(p[2])}</td></tr>`).join('');
+  const ws = weekStartOf(t);
+  let h = `<tr><th>週</th><th>週初め</th><th>フェーズ</th><th class="r">目標km</th><th class="r">ロング</th><th class="r">実績km</th><th>ねらい</th></tr>`;
+  PLAN.weeks.forEach(w => {
+    const act = weekKm(w.start);
+    const future = w.start > ws;
+    const pct = w.km > 0 && !future ? act/w.km*100 : null;
+    h += `<tr ${w.start === ws ? 'class="rowNow"' : ''}>
+      <td class="tnum"><b>W${w.w}</b></td>
+      <td class="tnum">${mdLabel(w.start)}</td>
+      <td><span class="wkph" style="background:${PHASE_COL[w.phase]}"></span>${esc(w.phase)}</td>
+      <td class="r tnum">${esc(w.kmLabel)}</td>
+      <td class="r tnum">${w.long ? w.long : '—'}</td>
+      <td class="r tnum">${future ? '<span class="mini">—</span>' : `<b>${act.toFixed(1)}</b>${pct != null ? `<div class="prog"><i style="width:${Math.min(100,pct)}%" class="${pct>130?'over':''}"></i></div>` : ''}`}</td>
+      <td class="aimcell">${esc(w.aim)}</td></tr>`;
+  });
+  $('#planTable').innerHTML = h;
+  const curPhase = menuPhaseOf(t);
+  const isRecWeek = pw && pw.phase === '回復';
+  const segItems = MENU_PHASES.map(p => ({key:p.key, name:p.name, now: !isRecWeek && curPhase && curPhase.key === p.key}))
+    .concat([{key:'rec', name:'回復週', now:!!isRecWeek}]);
+  $('#phaseSeg').innerHTML = segItems.map(p =>
+    `<button data-ph="${p.key}" class="${ui.phaseKey === p.key ? 'on' : ''}">${p.name}${p.now ? '●' : ''}</button>`).join('');
+  const ph = ui.phaseKey === 'rec'
+    ? {name:'回復週', range:'該当週: ' + REC_WEEKS_LABEL}
+    : MENU_PHASES.filter(p => p.key === ui.phaseKey)[0];
+  const todayDow = (dparse(t).getDay()+6)%7;
+  const segNow = segItems.filter(p => p.key === ui.phaseKey)[0];
+  $('#menuTable').innerHTML = `<tr><th>曜日</th><th>基本メニュー</th><th>${esc(ph.name)}${ui.phaseKey === 'rec' ? '' : '期'} (${esc(ph.range)})</th></tr>`
+    + MENUS.map((m,i) => `<tr ${segNow && segNow.now && i === todayDow ? 'class="rowNow"' : ''}>
+        <td><b>${m.d}</b></td><td class="mini">${esc(m.base)}</td><td class="aimcell"><b>${esc(m[ui.phaseKey])}</b></td></tr>`).join('');
+  $('#gymCards').innerHTML = GYM.map(g => `
+    <div class="gymcard">
+      <h3><span class="chip ${g.cls}">${esc(g.title)}</span></h3>
+      <div class="prep">${esc(g.prep)}</div>
+      <ol>${g.items.map(it => `<li>${esc(it)}</li>`).join('')}</ol>
+      <div class="mini" style="margin-top:6px">${esc(g.time)}</div>
+    </div>`).join('');
+  $('#gymProgTable').innerHTML = `<tr><th>期間</th><th>ベンチプレス</th><th>チンニング</th><th>メモ</th></tr>`
+    + GYM_PROG.map(r => `<tr><td><b>${esc(r[0])}</b></td><td class="tnum">${esc(r[1])}</td><td class="tnum">${esc(r[2])}</td><td class="aimcell mini">${esc(r[3])}</td></tr>`).join('');
+  $('#rulesList').innerHTML = RULES.map(r => `<li class="${r.hot ? 'hot' : ''}">${esc(r.t)}</li>`).join('');
+}
+
+function renderAll(){
+  renderHeader();
+  renderRecordTab();
+  renderCalendar();
+  renderRaceTab();
+  renderStatsTab();
+  renderPlanTab();
+}
+</script>
+
+<script>
+'use strict';
+/* ---------------- モーダル ---------------- */
+function openModal(id){
+  $('#overlay').classList.add('on');
+  $$('.modal').forEach(m => m.classList.remove('on'));
+  $('#' + id).classList.add('on');
+}
+function closeModals(){
+  $('#overlay').classList.remove('on');
+  $$('.modal').forEach(m => m.classList.remove('on'));
+  disarmDelete();
+}
+let delArmed = null;
+function disarmDelete(){
+  delArmed = null;
+  $('#recDelBtn').textContent = '削除';
+  $('#raceDelBtn').textContent = '削除';
+}
+function armDelete(btn, fn){
+  if(delArmed === btn){ disarmDelete(); fn(); return; }
+  delArmed = btn; btn.textContent = '本当に削除する?';
+}
+
+function renderWxChips(){
+  $('#wxChips').innerHTML = ['晴れ','曇り','雨','雪'].map(w =>
+    `<button type="button" data-wx="${w}" class="${ui.wx === w ? 'on' : ''}">${w}</button>`).join('');
+}
+function refreshRecDow(){
+  const v = $('#f_date').value;
+  $('#recDow').textContent = v ? '(' + dowOf(v) + ')' : '';
+}
+function refreshLiveCalc(){
+  const dist = parseFloat($('#f_dist').value);
+  const dur = parseDur($('#f_dur').value);
+  const tp = state.settings.targetPaceSec || 300;
+  let t = '';
+  if(dist > 0 && dur > 0){
+    t = 'ペース <b class="tnum">' + fmtPace(dur/dist) + '/km</b> · スピード <b class="tnum">' + (dist/(dur/3600)).toFixed(1) + 'km/h</b>';
+  }
+  $('#liveCalc').innerHTML = t;
+  $('#tgtAuto').textContent = dist > 0 && !$('#f_target').value ? '自動: ' + fmtDur(Math.round(dist * tp)) : '';
+}
+function renderModalThumbs(){
+  $('#photoThumbs').innerHTML = (ui.photoDraft || []).map(pid => `
+    <span class="pthumb-wrap">
+      ${photoImgHtml(pid, '')}
+      <button type="button" class="pdel" data-pdel="${pid}" aria-label="写真を削除">×</button>
+    </span>`).join('');
+  loadLazyPhotos();
+}
+function openRecModal(mode, id, presetDate){
+  ui.recMode = mode; ui.editRecId = id || null;
+  disarmDelete();
+  const now = new Date();
+  $('#courseList').innerHTML = Array.from(new Set(state.records.map(r => r.course).filter(Boolean))).map(c => `<option value="${esc(c)}">`).join('');
+  const editRec = mode === 'edit' ? state.records.filter(x => x.id === id)[0] : null;
+  if(editRec){
+    $('#recModalTitle').textContent = '記録の編集';
+    $('#recModalSub').textContent = '';
+    $('#f_date').value = editRec.date; $('#f_time').value = editRec.time || '';
+    ui.wx = editRec.weather || '晴れ';
+    $('#f_temp').value = editRec.temp == null ? '' : editRec.temp;
+    $('#f_course').value = editRec.course || ''; $('#f_note').value = editRec.note || '';
+    $('#f_dist').value = editRec.dist || ''; $('#f_dur').value = editRec.dur ? fmtDur(editRec.dur) : '';
+    $('#f_target').value = editRec.target ? fmtDur(editRec.target) : '';
+    $('#f_hrmax').value = editRec.hrMax || ''; $('#f_hravg').value = editRec.hrAvg || '';
+    $('#recDelBtn').style.display = '';
+    $('#tempAuto').textContent = '';
+  } else {
+    const ds = presetDate || todayStr();
+    const isToday = ds === todayStr();
+    $('#recModalTitle').textContent = mode === 'start' ? 'ランニング開始' : '記録を追加';
+    $('#recModalSub').textContent = mode === 'start'
+      ? '日付・時刻・気温は自動入力しました(気温は季節からの推定値です。タップで修正できます)。距離とタイムは走り終わってからでOK。'
+      : '過去のランをあとから追加できます。';
+    $('#f_date').value = ds;
+    $('#f_time').value = isToday && mode === 'start' ? pad(now.getHours()) + ':' + pad(now.getMinutes()) : '';
+    ui.wx = '晴れ';
+    const hour = isToday ? now.getHours() : 18;
+    $('#f_temp').value = estTemp(dparse(ds).getMonth() + 1, hour);
+    $('#tempAuto').textContent = '推定';
+    $('#f_course').value = state.settings.defaultCourse || '';
+    $('#f_note').value = ''; $('#f_dist').value = ''; $('#f_dur').value = '';
+    $('#f_target').value = ''; $('#f_hrmax').value = ''; $('#f_hravg').value = '';
+    $('#recDelBtn').style.display = 'none';
+  }
+  ui.photoDraft = (editRec && editRec.photos ? editRec.photos : []).slice();
+  $('#photoNote').textContent = syncConf() ? '' : '(同期未設定のため、この端末のみ)';
+  renderModalThumbs();
+  renderWxChips();
+  refreshRecDow();
+  refreshLiveCalc();
+  openModal('recModal');
+}
+function saveRec(){
+  const date = $('#f_date').value;
+  if(!date){ toast('日付を入力してください'); return; }
+  const dist = parseFloat($('#f_dist').value) || null;
+  const dur = parseDur($('#f_dur').value);
+  if($('#f_dur').value.trim() && dur == null){ toast('タイムの形式を確認してください(例 26:40)'); return; }
+  let target = parseDur($('#f_target').value);
+  if($('#f_target').value.trim() && target == null){ toast('目標タイムの形式を確認してください'); return; }
+  if(!target && dist > 0) target = Math.round(dist * (state.settings.targetPaceSec || 300));
+  const old = ui.editRecId ? state.records.filter(x => x.id === ui.editRecId)[0] : null;
+  const data = {
+    id: ui.editRecId || uid(),
+    date, time: $('#f_time').value || '',
+    dist, dur: dur || null, target: target || null,
+    hrMax: parseInt($('#f_hrmax').value, 10) || null,
+    hrAvg: parseInt($('#f_hravg').value, 10) || null,
+    course: $('#f_course').value.trim(),
+    weather: ui.wx,
+    temp: $('#f_temp').value === '' ? null : Number($('#f_temp').value),
+    note: $('#f_note').value.trim(),
+    photos: (ui.photoDraft || []).slice(),
+    createdAt: old ? (old.createdAt || old.u) : Date.now()
+  };
+  touchRec(data);
+  closeModals();
+  toast(dist && dur ? '保存しました' : '記録を作成しました。走り終わったらタップして結果を入力してください');
+}
+
+async function onPhotoFiles(e){
+  const files = Array.from(e.target.files || []);
+  e.target.value = '';
+  if(!files.length) return;
+  const room = 4 - (ui.photoDraft ? ui.photoDraft.length : 0);
+  if(room <= 0){ toast('写真は1つの記録に4枚までです'); return; }
+  const baseDate = $('#f_date').value || todayStr();
+  for(const f of files.slice(0, room)){
+    try{
+      const du = await downscalePhoto(f);
+      const pid = newPid(baseDate);
+      const pj = readPJ();
+      pj[pid] = {d: du, pub: 0};
+      if(!writePJ(pj)){
+        delete pj[pid]; writePJ(pj);
+        toast('端末の保存領域が足りず、写真を追加できませんでした');
+        break;
+      }
+      ui.photoDraft.push(pid);
+    }catch(err){
+      toast('この写真は読み込めませんでした');
+    }
+  }
+  if(files.length > room) toast('写真は4枚までのため、一部は追加していません');
+  renderModalThumbs();
+}
+function downscalePhoto(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1280;
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const sc = Math.min(1, MAX / Math.max(w, h));
+      w = Math.max(1, Math.round(w * sc)); h = Math.max(1, Math.round(h * sc));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image load failed')); };
+    img.src = url;
+  });
+}
+function removeDraftPhoto(pid){
+  ui.photoDraft = (ui.photoDraft || []).filter(p => p !== pid);
+  const pj = readPJ();
+  if(pj[pid] && !pj[pid].pub && !photoUsedSet().has(pid)){ delete pj[pid]; writePJ(pj); }
+  renderModalThumbs();
+}
+function openLightbox(src){
+  if(!src) return;
+  $('#lightboxImg').src = src;
+  $('#lightbox').classList.add('on');
+}
+
+function openRaceModal(id){
+  ui.editRaceId = id || null;
+  disarmDelete();
+  $('#raceNameList').innerHTML = Array.from(new Set(state.races.map(r => r.name))).map(n => `<option value="${esc(n)}">`).join('');
+  const r = id ? state.races.filter(x => x.id === id)[0] : null;
+  if(r){
+    $('#raceModalTitle').textContent = 'レースの編集';
+    $('#rf_date').value = r.date; $('#rf_name').value = r.name;
+    $('#rf_dist').value = r.dist || '';
+    $('#rf_target').value = r.target ? fmtDur(r.target, {forceH:true}) : '';
+    $('#rf_result').value = r.result ? fmtDur(r.result, {forceH:true}) : '';
+    $('#rf_note').value = r.note || '';
+    $('#raceDelBtn').style.display = '';
+  } else {
+    $('#raceModalTitle').textContent = 'レースを追加';
+    $('#rf_date').value = todayStr(); $('#rf_name').value = '';
+    $('#rf_dist').value = ''; $('#rf_target').value = ''; $('#rf_result').value = ''; $('#rf_note').value = '';
+    $('#raceDelBtn').style.display = 'none';
+  }
+  openModal('raceModal');
+}
+function saveRace(){
+  const date = $('#rf_date').value, name = $('#rf_name').value.trim();
+  if(!date || !name){ toast('日付とレース名を入力してください'); return; }
+  const target = parseDur($('#rf_target').value), result = parseDur($('#rf_result').value);
+  const old = ui.editRaceId ? state.races.filter(x => x.id === ui.editRaceId)[0] : null;
+  touchRace({
+    id: ui.editRaceId || uid(), date, name,
+    dist: parseFloat($('#rf_dist').value) || null,
+    target: target || null, result: result || null,
+    note: $('#rf_note').value.trim(),
+    createdAt: old ? (old.createdAt || old.u) : Date.now()
+  });
+  closeModals();
+  toast('保存しました');
+}
+
+function openSettings(){
+  const c = state.settings.sync || {};
+  $('#s_db').value = c.db || '';
+  $('#s_code').value = c.code || '';
+  $('#syncStopBtn').style.display = syncConf() ? '' : 'none';
+  $('#syncStartBtn').textContent = syncConf() ? '同期設定を更新' : '同期を開始';
+  $('#s_age').value = state.settings.age || '';
+  $('#s_pace').value = fmtPace(state.settings.targetPaceSec || 300);
+  $('#s_course').value = state.settings.defaultCourse || '';
+  $('#s_hrNote').innerHTML = '目標心拍数(自動) = (220 − 年齢) × 0.65 = <b>' + hrTarget() + '</b>';
+  $('#restoreArea').style.display = 'none';
+  $('#setSub').textContent = syncConf() ? 'データはFirebaseに同期されています。' : '同期を設定すると、スマホや他のPCと同じデータを共有できます。';
+  const n = $('#syncStateNote'); if(n) n.textContent = '';
+  openModal('setModal');
+}
+function applySyncSettings(){
+  let db = $('#s_db').value.trim().replace(/\/+$/, '');
+  const code = $('#s_code').value.trim();
+  if(!db || !code){ toast('Database URLと同期コードの両方を入力してください'); return; }
+  if(!/^https:\/\//.test(db)){ toast('Database URLはhttps://から入力してください'); return; }
+  state.settings.sync = {db, code};
+  state.settings.u = Date.now();
+  persist();
+  startSync();
+  $('#syncStopBtn').style.display = '';
+  $('#syncStartBtn').textContent = '同期設定を更新';
+  toast('同期を開始しました');
+}
+
+/* ---------------- イベント ---------------- */
+function bindEvents(){
+  $$('.tabbtn').forEach(b => b.addEventListener('click', () => {
+    ui.tab = b.dataset.tab;
+    $$('.tabbtn').forEach(x => x.classList.toggle('on', x === b));
+    $$('section.tab').forEach(s => s.classList.toggle('on', s.id === 'tab-' + ui.tab));
+    window.scrollTo({top:0});
+  }));
+  $('#countPill').addEventListener('click', () => $$('.tabbtn').filter(b => b.dataset.tab === 'race')[0].click());
+  $('#settingsBtn').addEventListener('click', openSettings);
+  $('#syncBadge').addEventListener('click', openSettings);
+  $('#overlay').addEventListener('click', closeModals);
+
+  $('#startRunBtn').addEventListener('click', () => openRecModal('start'));
+  $('#addManualBtn').addEventListener('click', () => openRecModal('manual'));
+  $('#metricSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    ui.metric = b.dataset.m;
+    $$('#metricSeg button').forEach(x => x.classList.toggle('on', x === b));
+    renderRecChart();
+  });
+  $('#aggSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    ui.agg = b.dataset.a;
+    $$('#aggSeg button').forEach(x => x.classList.toggle('on', x === b));
+    renderAggTable();
+  });
+  $('#phaseSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    ui.phaseKey = b.dataset.ph;
+    renderPlanTab();
+  });
+  document.addEventListener('click', e => {
+    const lb = e.target.closest('[data-lightbox]');
+    if(lb){ openLightbox(lb.getAttribute('src')); return; }
+    if(e.target.closest('[data-pdel]')) return;
+    const rec = e.target.closest('[data-rec]');
+    if(rec){ openRecModal('edit', rec.dataset.rec); return; }
+    const race = e.target.closest('[data-race]');
+    if(race){ openRaceModal(race.dataset.race); return; }
+    const day = e.target.closest('[data-day]');
+    if(day){ openDayModal(day.dataset.day); return; }
+  });
+  $('#calPrev').addEventListener('click', () => { ui.calM--; if(ui.calM < 0){ ui.calM = 11; ui.calY--; } renderCalendar(); });
+  $('#calNext').addEventListener('click', () => { ui.calM++; if(ui.calM > 11){ ui.calM = 0; ui.calY++; } renderCalendar(); });
+  $('#calToday').addEventListener('click', () => { const n = new Date(); ui.calY = n.getFullYear(); ui.calM = n.getMonth(); renderCalendar(); });
+
+  $('#wxChips').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return;
+    ui.wx = b.dataset.wx;
+    renderWxChips();
+  });
+  $('#f_date').addEventListener('change', refreshRecDow);
+  ['f_dist','f_dur','f_target'].forEach(id => $('#' + id).addEventListener('input', refreshLiveCalc));
+  $('#recSaveBtn').addEventListener('click', saveRec);
+  $('#recCancelBtn').addEventListener('click', closeModals);
+  $('#recDelBtn').addEventListener('click', () => armDelete($('#recDelBtn'), () => {
+    removeRec(ui.editRecId);
+    closeModals(); toast('削除しました');
+  }));
+  $('#photoAddBtn').addEventListener('click', () => $('#f_photos').click());
+  $('#f_photos').addEventListener('change', onPhotoFiles);
+  $('#photoThumbs').addEventListener('click', e => {
+    const del = e.target.closest('[data-pdel]');
+    if(del) removeDraftPhoto(del.dataset.pdel);
+  });
+  $('#lightbox').addEventListener('click', () => $('#lightbox').classList.remove('on'));
+
+  $('#addRaceBtn').addEventListener('click', () => openRaceModal(null));
+  $('#raceSaveBtn').addEventListener('click', saveRace);
+  $('#raceCancelBtn').addEventListener('click', closeModals);
+  $('#raceDelBtn').addEventListener('click', () => armDelete($('#raceDelBtn'), () => {
+    removeRace(ui.editRaceId);
+    closeModals(); toast('削除しました');
+  }));
+  $('#dayCloseBtn').addEventListener('click', closeModals);
+  $('#dayAddBtn').addEventListener('click', () => openRecModal('manual', null, ui.dayDate));
+
+  $('#genCodeBtn').addEventListener('click', () => { $('#s_code').value = genSyncCode(); });
+  $('#syncStartBtn').addEventListener('click', applySyncSettings);
+  $('#syncStopBtn').addEventListener('click', () => {
+    delete state.settings.sync;
+    state.settings.u = Date.now();
+    persist();
+    stopSync();
+    setSyncUI('off');
+    $('#syncStopBtn').style.display = 'none';
+    $('#syncStartBtn').textContent = '同期を開始';
+    toast('同期を停止しました(データはこの端末に残ります)');
+  });
+  $('#setCancelBtn').addEventListener('click', closeModals);
+  $('#setSaveBtn').addEventListener('click', () => {
+    const pace = parseDur($('#s_pace').value);
+    patchSettings({
+      age: parseInt($('#s_age').value, 10) || 33,
+      targetPaceSec: pace || 300,
+      defaultCourse: $('#s_course').value.trim()
+    });
+    closeModals(); toast('設定を保存しました');
+  });
+  $('#backupBtn').addEventListener('click', async () => {
+    const json = JSON.stringify(state);
+    try{
+      await navigator.clipboard.writeText(json);
+      toast('バックアップをコピーしました。メモ帳などに貼り付けて保管してください');
+    }catch(e){
+      $('#restoreArea').style.display = '';
+      $('#restoreText').value = json;
+      $('#restoreText').select();
+      toast('下の欄を全選択してコピーしてください');
+    }
+  });
+  $('#restoreBtn').addEventListener('click', () => {
+    $('#restoreArea').style.display = '';
+    $('#restoreText').value = '';
+    $('#restoreText').focus();
+  });
+  $('#restoreGoBtn').addEventListener('click', () => {
+    try{
+      const d = JSON.parse($('#restoreText').value);
+      if(!d || !Array.isArray(d.records)) throw new Error('bad');
+      const keepSync = state.settings.sync;
+      /* 旧アプリ(updatedAt)と新アプリ(u)の両形式を受け付ける */
+      d.records.forEach(r => { if(r.u == null) r.u = r.updatedAt || Date.now(); });
+      (d.races || []).forEach(r => { if(r.u == null) r.u = r.updatedAt || Date.now(); });
+      state.records = d.records;
+      state.races = d.races || [];
+      state.tombstones = d.tombstones || {};
+      if(d.settings){
+        state.settings = Object.assign({}, d.settings);
+        if(state.settings.u == null) state.settings.u = Date.now();
+      }
+      if(keepSync) state.settings.sync = keepSync;
+      afterChange();
+      closeModals(); toast('復元しました');
+    }catch(e){ toast('JSONを読み取れませんでした'); }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(!document.hidden && syncConf()){ scheduleRefetch(); pushPhotos(); }
+  });
+  window.addEventListener('online', () => { if(syncConf()) schedulePush(); });
+}
+
+/* ---------------- 起動 ---------------- */
+(function init(){
+  try{
+    devId = localStorage.getItem(LS_DEV);
+    if(!devId){ devId = 'd' + uid(); localStorage.setItem(LS_DEV, devId); }
+  }catch(e){ devId = 'd' + uid(); }
+  state = loadLocal();
+  /* 送信済み写真のローカルコピーを掃除(以後はサーバから取得) */
+  try{
+    const pj = readPJ();
+    const used = photoUsedSet();
+    let changed = false;
+    Object.keys(pj).forEach(pid => {
+      if((pj[pid].pub && syncConf()) || !used.has(pid)){ delete pj[pid]; changed = true; }
+    });
+    if(changed) writePJ(pj);
+  }catch(e){}
+  const n = new Date();
+  ui.calY = n.getFullYear(); ui.calM = n.getMonth();
+  const cp = menuPhaseOf(todayStr());
+  const cw = planWeekOf(todayStr());
+  ui.phaseKey = (cw && cw.phase === '回復') ? 'rec' : (cp ? cp.key : 'p1');
+  bindEvents();
+  renderAll();
+  setSyncUI(syncConf() ? 'offline' : 'off');
+  startSync();
+  if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
+    try{ navigator.serviceWorker.register('./sw.js'); }catch(e){}
+  }
+})();
+</script>
+</body>
+</html>
