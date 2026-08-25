@@ -512,11 +512,11 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
   </div>
   <hr style="border:none; border-top:1px solid var(--line); margin:12px 0">
   <div class="frow">
-    <div class="fld"><label>走行距離(km)</label><input type="number" id="f_dist" step="0.01" inputmode="decimal" placeholder="5.00"></div>
-    <div class="fld"><label>タイム</label><input type="text" id="f_dur" inputmode="numeric" placeholder="26:40"><div class="hint">分:秒 (例 26:40、1:02:30)</div></div>
+    <div class="fld"><label>走行距離(km)</label><input type="text" id="f_dist" inputmode="decimal" placeholder="5.00"></div>
+    <div class="fld"><label>タイム</label><input type="text" id="f_dur" inputmode="numeric" placeholder="2640"><div class="hint">数字だけでOK: 2640→26:40、13000→1:30:00</div></div>
   </div>
   <div class="frow">
-    <div class="fld"><label>目標タイム <span class="auto" id="tgtAuto"></span></label><input type="text" id="f_target" inputmode="numeric" placeholder="25:00"><div class="hint">空欄なら 距離×目標ペースで自動計算</div></div>
+    <div class="fld"><label>目標タイム <span class="auto" id="tgtAuto"></span></label><input type="text" id="f_target" inputmode="numeric" placeholder="2500"><div class="hint">空欄なら 距離×目標ペースで自動計算</div></div>
     <div class="fld"><label>&nbsp;</label><div class="note" id="liveCalc" style="padding-top:6px"></div></div>
   </div>
   <div class="frow">
@@ -537,14 +537,14 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
   <div class="msub">結果タイムが空欄のレースは「予定」として表示されます。</div>
   <div class="frow">
     <div class="fld"><label>日付</label><input type="date" id="rf_date"></div>
-    <div class="fld"><label>走行距離(km)</label><input type="number" id="rf_dist" step="0.001" inputmode="decimal"></div>
+    <div class="fld"><label>走行距離(km)</label><input type="text" id="rf_dist" inputmode="decimal" placeholder="42.195"></div>
   </div>
   <div class="frow one">
     <div class="fld"><label>レース名</label><input type="text" id="rf_name" list="raceNameList"><datalist id="raceNameList"></datalist></div>
   </div>
   <div class="frow">
-    <div class="fld"><label>目標タイム</label><input type="text" id="rf_target" placeholder="4:00:00"></div>
-    <div class="fld"><label>結果タイム</label><input type="text" id="rf_result" placeholder="走ったら入力"></div>
+    <div class="fld"><label>目標タイム</label><input type="text" id="rf_target" inputmode="numeric" placeholder="40000 → 4:00:00"></div>
+    <div class="fld"><label>結果タイム</label><input type="text" id="rf_result" inputmode="numeric" placeholder="走ったら入力"></div>
   </div>
   <div class="frow one">
     <div class="fld"><label>メモ</label><input type="text" id="rf_note"></div>
@@ -763,14 +763,28 @@ function fmtPace(spk){
 }
 function parseDur(str){
   if(str == null) return null;
-  str = String(str).trim().replace(/：/g,':');
+  str = String(str).trim().replace(/：/g,':').replace(/,/g,'.');
   if(!str) return null;
+  /* 数字だけの入力(スマホの数字キーパッド対応): 130→1:30、2640→26:40、12640→1:26:40 */
+  if(/^\d+$/.test(str)){
+    if(str.length <= 2) return (+str)*60;                    /* 分 */
+    const ss = +str.slice(-2);
+    if(ss >= 60) return null;
+    if(str.length <= 4) return (+str.slice(0,-2))*60 + ss;   /* 分秒 */
+    const mm = +str.slice(-4,-2);
+    if(mm >= 60) return null;
+    return (+str.slice(0,-4))*3600 + mm*60 + ss;             /* 時分秒 */
+  }
   const parts = str.split(':').map(p => p.trim());
   if(parts.some(p => p === '' || isNaN(Number(p)))) return null;
   if(parts.length === 3) return (+parts[0])*3600 + (+parts[1])*60 + (+parts[2]);
   if(parts.length === 2) return (+parts[0])*60 + (+parts[1]);
-  if(parts.length === 1) return Math.round(parseFloat(parts[0])*60);
+  if(parts.length === 1) return Math.round(parseFloat(parts[0])*60); /* 26.5 = 26分30秒 */
   return null;
+}
+function parseNum(v){
+  if(v == null) return NaN;
+  return parseFloat(String(v).trim().replace(/,/g,'.').replace(/[^0-9.\-]/g,''));
 }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function hrTarget(){ return Math.round((220 - (state.settings.age||33)) * (state.settings.hrFactor||0.65)); }
@@ -1679,14 +1693,15 @@ function refreshRecDow(){
   $('#recDow').textContent = v ? '(' + dowOf(v) + ')' : '';
 }
 function refreshLiveCalc(){
-  const dist = parseFloat($('#f_dist').value);
+  const dist = parseNum($('#f_dist').value);
   const dur = parseDur($('#f_dur').value);
+  const tgt = parseDur($('#f_target').value);
   const tp = state.settings.targetPaceSec || 300;
-  let t = '';
-  if(dist > 0 && dur > 0){
-    t = 'ペース <b class="tnum">' + fmtPace(dur/dist) + '/km</b> · スピード <b class="tnum">' + (dist/(dur/3600)).toFixed(1) + 'km/h</b>';
-  }
-  $('#liveCalc').innerHTML = t;
+  const parts = [];
+  if(dur > 0) parts.push('タイム <b class="tnum">' + fmtDur(dur) + '</b>');
+  if(dist > 0 && dur > 0) parts.push('ペース <b class="tnum">' + fmtPace(dur/dist) + '/km</b> · スピード <b class="tnum">' + (dist/(dur/3600)).toFixed(1) + 'km/h</b>');
+  if(tgt > 0) parts.push('目標 <b class="tnum">' + fmtDur(tgt) + '</b>');
+  $('#liveCalc').innerHTML = parts.join(' · ');
   $('#tgtAuto').textContent = dist > 0 && !$('#f_target').value ? '自動: ' + fmtDur(Math.round(dist * tp)) : '';
 }
 function renderModalThumbs(){
@@ -1744,9 +1759,10 @@ function openRecModal(mode, id, presetDate){
 function saveRec(){
   const date = $('#f_date').value;
   if(!date){ toast('日付を入力してください'); return; }
-  const dist = parseFloat($('#f_dist').value) || null;
+  const dist = parseNum($('#f_dist').value) || null;
+  if($('#f_dist').value.trim() && !(dist > 0)){ toast('距離の形式を確認してください(例 5.00)'); return; }
   const dur = parseDur($('#f_dur').value);
-  if($('#f_dur').value.trim() && dur == null){ toast('タイムの形式を確認してください(例 26:40)'); return; }
+  if($('#f_dur').value.trim() && dur == null){ toast('タイムの形式を確認してください(例 2640 または 26:40)'); return; }
   let target = parseDur($('#f_target').value);
   if($('#f_target').value.trim() && target == null){ toast('目標タイムの形式を確認してください'); return; }
   if(!target && dist > 0) target = Math.round(dist * (state.settings.targetPaceSec || 300));
@@ -1854,7 +1870,7 @@ function saveRace(){
   const old = ui.editRaceId ? state.races.filter(x => x.id === ui.editRaceId)[0] : null;
   touchRace({
     id: ui.editRaceId || uid(), date, name,
-    dist: parseFloat($('#rf_dist').value) || null,
+    dist: parseNum($('#rf_dist').value) || null,
     target: target || null, result: result || null,
     note: $('#rf_note').value.trim(),
     createdAt: old ? (old.createdAt || old.u) : Date.now()
