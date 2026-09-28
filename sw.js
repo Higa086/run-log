@@ -1,5 +1,5 @@
 /* NAHAランログ Service Worker — network-first(オフライン時のみキャッシュ) */
-const CACHE = 'nahalog-v1';
+const CACHE = 'nahalog-v2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
@@ -14,7 +14,8 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if(e.request.method !== 'GET' || url.origin !== location.origin) return; /* Firebase等はスルー */
   e.respondWith(
-    fetch(e.request).then(res => {
+    /* HTTPキャッシュ(最大10分)を使わず毎回サーバーに確認する。更新直後に古い版が開くのを防ぐ */
+    fetch(e.request.url, {cache:'no-cache', credentials:'same-origin'}).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return res;
