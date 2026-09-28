@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>NAHAランログ</title>
+<title>ラン＆筋トレログ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A8A9E">
 <link rel="manifest" href="./manifest.json">
@@ -227,9 +227,9 @@ table.dt td.r, table.dt th.r{text-align:right}
 .cal-cell .rc{font-size:9px; color:var(--coral); font-weight:700; display:block; line-height:1.2}
 .cal-cell .pin{position:absolute; right:4px; bottom:4px; width:6px; height:6px; border-radius:50%}
 .cal-cell .top{display:flex; align-items:center; gap:3px; min-width:0}
-.cal-cell .gy{font-size:9.5px; font-weight:700; color:var(--indigo); background:var(--indigo-soft); border-radius:4px; padding:0 3px; line-height:1.5; white-space:nowrap}
-.cal-cell .gy .gs{display:none}
-@media(max-width:720px){ .cal-grid{grid-template-columns:20px repeat(7,1fr)} .cal-cell{min-height:46px} .cal-cell .gy .gl{display:none} .cal-cell .gy .gs{display:inline} }
+.cal-cell .gv{display:block; font-size:11.5px; font-weight:600; color:var(--indigo); line-height:1.15; white-space:nowrap}
+.cal-cell .gv small{font-size:9px; font-weight:500; color:var(--mut); font-family:"Noto Sans JP",sans-serif}
+@media(max-width:720px){ .cal-grid{grid-template-columns:20px repeat(7,1fr)} .cal-cell{min-height:46px} .cal-cell .gv{font-size:10.5px} .cal-cell .gv small{display:none} }
 
 /* plan */
 .week-now{outline:2px solid var(--accent); outline-offset:-2px; border-radius:8px}
@@ -313,7 +313,36 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
 .toast.on{opacity:1}
 .day-list .rcard{margin-bottom:8px}
 .rcard.gcard{border-left:3px solid var(--indigo)}
-.rcard .gitems{font-size:12px; color:var(--mut); margin-top:4px; line-height:1.55}
+.rcard .gtot{font-size:11.5px; color:var(--mut)}
+.rcard .gtot b{font-size:17px; color:var(--ink); font-weight:600; margin:0 1px}
+.rcard .gmeta{font-size:11.5px; color:var(--faint); margin-top:1px}
+.exsum{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px}
+.exsum td{padding:5px 8px 5px 0; border-top:1px solid var(--line2); vertical-align:top}
+.exsum td.en{font-weight:700; white-space:nowrap; width:9.5em}
+.exsum td.es{color:var(--mut); line-height:1.5}
+.exsum td.ev{text-align:right; white-space:nowrap; padding-right:0}
+/* 筋トレ入力 */
+.gsum{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:2px 0 12px}
+.gsum > div{background:var(--indigo-soft); border-radius:10px; padding:6px 4px; text-align:center}
+.gsum .k{font-size:10px; color:var(--indigo); font-weight:700; letter-spacing:.02em}
+.gsum .v{font-size:18px; font-weight:600; color:var(--ink); line-height:1.25}
+.exblk{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--card)}
+.exblk .exhead{display:flex; align-items:center; gap:8px; padding:8px 6px 8px 12px; background:var(--card2)}
+.exblk .exhead b{font-size:14px}
+.exblk .exfrom{font-size:11px; color:var(--indigo); background:var(--indigo-soft); padding:4px 12px}
+.settbl{width:100%; border-collapse:collapse; font-size:13px}
+.settbl th{font-size:10.5px; color:var(--faint); font-weight:700; text-align:left; padding:5px 6px 3px; white-space:nowrap}
+.settbl th.r{text-align:right}
+.settbl td{padding:3px 6px; border-top:1px solid var(--line2)}
+.settbl td.no{width:40px; color:var(--mut); font-weight:700; text-align:center}
+.settbl td.rm{color:var(--mut); white-space:nowrap; text-align:right; font-size:12.5px; min-width:48px}
+.settbl input{width:100%; max-width:96px; border:1px solid var(--line); border-radius:8px; padding:6px 8px; background:var(--bg); font-size:16px}
+.settbl input:focus{border-color:var(--accent); outline:none}
+.xbtn{border:0; background:none; color:var(--faint); font-size:15px; font-weight:700; padding:4px 8px; line-height:1; border-radius:6px; white-space:nowrap}
+.xbtn:hover{background:var(--card2); color:var(--bad)}
+.xbtn.armed{color:var(--bad); font-size:12px}
+.exblk .exfoot{display:flex; align-items:center; gap:8px; padding:6px 12px 9px; flex-wrap:wrap}
+.btn.sm{padding:4px 11px; font-size:12.5px}
 
 /* 写真 */
 .photo-thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
@@ -333,7 +362,7 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
 <header class="app-head">
   <div class="wrap">
     <div class="brand">
-      <h1>NAHAランログ</h1>
+      <h1>ラン＆筋トレログ</h1>
       <div class="sub">大山駅・板橋区 — 初フルへの道</div>
     </div>
     <div class="head-spacer"></div>
@@ -359,27 +388,52 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
 <main class="wrap">
   <!-- ============ 記録 ============ -->
   <section class="tab on" id="tab-record">
-    <div class="btnrow" style="margin-bottom:14px">
+    <div class="btnrow" style="margin-bottom:12px">
       <button class="btn primary big" id="startRunBtn">▶ ランニング開始</button>
-      <button class="btn" id="addManualBtn">＋ あとから追加</button>
-      <button class="btn" id="addGymBtn">＋ 筋トレ</button>
+      <button class="btn" id="addManualBtn">＋ ランをあとから追加</button>
+      <button class="btn" id="addGymBtn">＋ 筋トレを記録</button>
     </div>
-    <div class="tiles" id="recTiles"></div>
-    <div class="card">
-      <h2>推移グラフ <span class="hnote" id="chartNote"></span></h2>
-      <div class="seg" id="metricSeg" style="margin-bottom:10px">
-        <button data-m="pace" class="on">ペース</button>
-        <button data-m="time">タイム</button>
-        <button data-m="speed">スピード</button>
-        <button data-m="hr">心拍数</button>
+    <div class="seg" id="kindSeg" style="margin-bottom:12px">
+      <button data-k="run" class="on">ラン</button>
+      <button data-k="gym">筋トレ</button>
+    </div>
+    <div id="runView">
+      <div class="tiles" id="recTiles"></div>
+      <div class="card">
+        <h2>推移グラフ <span class="hnote" id="chartNote"></span></h2>
+        <div class="seg" id="metricSeg" style="margin-bottom:10px">
+          <button data-m="pace" class="on">ペース</button>
+          <button data-m="time">タイム</button>
+          <button data-m="speed">スピード</button>
+          <button data-m="hr">心拍数</button>
+          <button data-m="dist">距離</button>
+        </div>
+        <div class="chart-box" id="recChart"></div>
+        <div class="legend" id="recLegend"></div>
       </div>
-      <div class="chart-box" id="recChart"></div>
-      <div class="legend" id="recLegend"></div>
+      <div class="card">
+        <h2>ランニング タイム記録表</h2>
+        <div class="tscroll rec-table"><table class="dt" id="recTable"></table></div>
+        <div class="rec-cards" id="recCards"></div>
+      </div>
     </div>
-    <div class="card">
-      <h2>ランニング タイム記録表</h2>
-      <div class="tscroll rec-table"><table class="dt" id="recTable"></table></div>
-      <div class="rec-cards" id="recCards"></div>
+    <div id="gymView" style="display:none">
+      <div class="tiles" id="gymTiles"></div>
+      <div class="card">
+        <h2>筋トレ推移グラフ <span class="hnote" id="gymChartNote"></span></h2>
+        <div class="seg" id="gymMetricSeg" style="margin-bottom:8px">
+          <button data-gm="vol" class="on">総負荷量</button>
+          <button data-gm="rm">最大RM</button>
+        </div>
+        <div class="chiprow" id="gymFilter" style="margin-bottom:10px"></div>
+        <div class="chart-box" id="gymChart"></div>
+        <div class="legend" id="gymLegend"></div>
+      </div>
+      <div class="card">
+        <h2>筋トレ記録表</h2>
+        <div id="gymList"></div>
+        <p class="mini" style="margin:8px 0 0">総負荷量 = 重さ×回数の合計(ALL = 全種目)。RM(推定1回最大重量)= 重さ×(1+回数÷40)。セットの「40×8×3」は 40kg×8回を3セット。タップで編集できます。</p>
+      </div>
     </div>
   </section>
 
@@ -415,6 +469,11 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
   <!-- ============ 統計 ============ -->
   <section class="tab" id="tab-stats">
     <div class="tiles" id="statTiles"></div>
+    <div class="card">
+      <h2>週別ラン距離</h2>
+      <div class="chart-box" id="weekChart"></div>
+      <div class="legend" id="weekLegend"></div>
+    </div>
     <div class="card">
       <h2>月別ラン距離</h2>
       <div class="chart-box" id="monthChart"></div>
@@ -569,20 +628,17 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
   <div class="msub" id="gymModalSub"></div>
   <div class="frow">
     <div class="fld"><label>日付 <span id="gymDow" class="auto"></span></label><input type="date" id="g_date"></div>
-    <div class="fld"><label>種類</label><div class="chiprow" id="gymKindChips"></div></div>
+    <div class="fld"><label>メモ</label><input type="text" id="g_note" placeholder="任意"></div>
   </div>
-  <div class="frow one">
-    <div class="fld">
-      <label>やった種目</label>
-      <div class="chiprow" id="gymItemChips"></div>
-      <div class="hint">予定の種目にチェックが入った状態で開きます。やらなかった種目だけタップで外してください。</div>
+  <div class="gsum" id="gymSum"></div>
+  <div id="gymExList"></div>
+  <div class="fld">
+    <label>種目を追加 <span class="auto">前回のセット内容が入ります</span></label>
+    <div class="chiprow" id="gymExChips"></div>
+    <div class="btnrow" style="margin-top:8px">
+      <input type="text" id="g_newEx" placeholder="その他の種目名" style="flex:1; min-width:140px">
+      <button class="btn" id="gymAddExBtn" type="button">追加</button>
     </div>
-  </div>
-  <div class="frow one">
-    <div class="fld"><label>きつさ(任意)</label><div class="chiprow" id="gymFeelChips"></div></div>
-  </div>
-  <div class="frow one">
-    <div class="fld"><label>メモ</label><input type="text" id="g_note" placeholder="任意(例: ベンチ42.5kg×8×3)"></div>
   </div>
   <div class="mfoot">
     <button class="btn danger" id="gymDelBtn" style="display:none">削除</button>
@@ -670,7 +726,7 @@ ol.rules li.hot{color:var(--bad); font-weight:700}
 
 <script>
 /* ================================================================
-   NAHAランログ — 単一ファイルアプリ (GitHub Pages + Firebase RTDB同期)
+   ラン＆筋トレログ — 単一ファイルアプリ (GitHub Pages + Firebase RTDB同期)
    同期方式: REST(fetch+EventSource)のみ。SDK不使用。
    送信は必ず「/t確認 → 差分あればfetch&merge → PATCH」の順(データ消失防止)。
    ================================================================ */
@@ -758,13 +814,8 @@ const GYM_PROG = [
   ['9/14〜11/8','40〜45kg×6〜8×3','自重×できる回数×3','以前の水準(50kg×3・自重)に無理なく接近'],
   ['11/9〜本番','40kg×8×2(火のみ・週1に減)','アシスト12kg×8×2(週1)','維持モード。脚と回復をランに全振り']
 ];
-/* 筋トレ記録(カレンダー用)。[種目名, 既定でチェック] */
-const GYM_KINDS = [
-  {k:'push', label:'押す日', cal:'押す日', short:'押', items:[['ベンチ メイン',1],['ベンチ ボリューム',1],['ベンチ 締め',1],['チンニング',1],['チェストプレス/フライ',1]]},
-  {k:'pull', label:'引く日', cal:'引く日', short:'引', items:[['ベンチ 軽め',1],['チンニング',1],['ロー',1],['ラットプル',1],['リスト',0]]},
-  {k:'other', label:'その他', cal:'筋トレ', short:'筋', items:[['ベンチ',0],['チンニング',0],['ロー',0],['ラットプル',0],['チェストプレス/フライ',0],['リスト',0]]}
-];
-const GYM_FEEL = [['easy','軽め','good'],['mid','ふつう','acc'],['hard','きつい','coral']];
+/* 筋トレ記録: 種目の候補(記録済みの種目名も自動で候補に加わる) */
+const GYM_EX_DEFAULT = ['ベンチプレス','ペクトラルフライ','チェストプレス','チンニング(懸垂)','ロー','ラットプルダウン','リストカール'];
 const GYM_ONE_A_WEEK_FROM = '2026-11-09'; /* この週から筋トレは火曜のみ */
 const RULES = [
   {t:'毎日7000歩ルーティンは基本キープ。ただし体調不良・医師の運動制限中は7000歩も休む(再開の可否は医師に確認)'},
@@ -1210,7 +1261,50 @@ function menuPhaseOf(dateStr){
 function weekKm(ws){
   return state.records.filter(r => recComplete(r) && weekStartOf(r.date) === ws).reduce((s,r) => s + r.dist, 0);
 }
-function gymKind(k){ return GYM_KINDS.filter(x => x.k === k)[0] || GYM_KINDS[2]; }
+function numSet(st){ return {w: Math.max(0, parseNum(st && st.w) || 0), r: Math.max(0, parseInt(st && st.r, 10) || 0)}; }
+function exArr(g){ return asArr(g && g.ex).map(e => ({n: String(e.n || ''), sets: asArr(e.sets)})); }
+function setRM(w, r){ return (w > 0 && r > 0) ? w * (1 + r/40) : 0; }
+function fmtRM(v){ if(!(v > 0)) return '—'; const t = (Math.round(v*100)/100).toFixed(2); return t.slice(-1) === '0' ? t.slice(0,-1) : t; }
+function fmtKg(v){ return Math.round(v || 0).toLocaleString('ja-JP'); }
+function fmtW(w){ return String(Math.round(w*100)/100); }
+function exStats(e){
+  let sets = 0, reps = 0, vol = 0, rm = 0;
+  asArr(e && e.sets).forEach(st => {
+    const x = numSet(st);
+    if(!(x.r > 0)) return;
+    sets++; reps += x.r; vol += x.w * x.r; rm = Math.max(rm, setRM(x.w, x.r));
+  });
+  return {sets, reps, vol, rm};
+}
+function gymStats(g, filter){
+  const t = {ex:0, sets:0, reps:0, vol:0, rm:0};
+  exArr(g).forEach(e => {
+    if(filter && filter !== 'ALL' && e.n !== filter) return;
+    const x = exStats(e);
+    if(!x.sets) return;
+    t.ex++; t.sets += x.sets; t.reps += x.reps; t.vol += x.vol; t.rm = Math.max(t.rm, x.rm);
+  });
+  return t;
+}
+/* 連続する同じセットをまとめる: 40×8, 40×8, 40×8 → 40×8×3 */
+function setsNotation(sets){
+  const out = []; let prev = null, cnt = 0;
+  asArr(sets).forEach(st => {
+    const x = numSet(st);
+    if(!(x.r > 0)) return;
+    const k = fmtW(x.w) + '×' + x.r;
+    if(k === prev) cnt++;
+    else { if(prev) out.push(prev + (cnt > 1 ? '×' + cnt : '')); prev = k; cnt = 1; }
+  });
+  if(prev) out.push(prev + (cnt > 1 ? '×' + cnt : ''));
+  return out.join(', ');
+}
+function sortedGyms(){ return (state.gyms || []).slice().sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : (a.createdAt||0) - (b.createdAt||0)); }
+function gymExNames(){
+  const names = GYM_EX_DEFAULT.slice();
+  sortedGyms().forEach(g => exArr(g).forEach(e => { if(e.n && names.indexOf(e.n) < 0) names.push(e.n); }));
+  return names;
+}
 function gymsOn(ds){ return (state.gyms || []).filter(g => g.date === ds).sort((a,b) => (a.createdAt||0) - (b.createdAt||0)); }
 function weekGymCount(ws){ return (state.gyms || []).filter(g => weekStartOf(g.date) === ws).length; }
 function weekGymPlan(ws){
@@ -1241,7 +1335,7 @@ function menuFor(dateStr){
 <script>
 'use strict';
 /* ---------------- UI状態 ---------------- */
-const ui = {tab:'record', metric:'pace', agg:'week', calY:0, calM:0, phaseKey:'p1', editRecId:null, editRaceId:null, wx:'晴れ', dayDate:null, recMode:'start', photoDraft:[], editGymId:null, gymKind:'push', gymItems:[], gymFeel:'', gymTouched:false};
+const ui = {tab:'record', metric:'pace', agg:'week', calY:0, calM:0, phaseKey:'p1', editRecId:null, editRaceId:null, wx:'晴れ', dayDate:null, recMode:'start', photoDraft:[], editGymId:null, gymDraft:{ex:[]}, recKind:'run', gymMetric:'vol', gymFilter:'ALL'};
 
 /* ---------------- チャート共通 ---------------- */
 const CW=720, CH=250, CL=50, CR=16, CT=16, CB=30;
@@ -1310,27 +1404,41 @@ function roundTop(x, y, w, h, r){
 }
 function barChart(el, cfg){
   const pts = cfg.points;
-  if(!pts.length){ el.innerHTML = '<div class="empty">まだ表示できるデータがありません</div>'; return; }
-  const max = Math.max.apply(null, pts.map(p => p.val)) * 1.15 || 1;
+  if(!pts.length || !pts.some(p => (p.val || 0) > 0 || (p.target || 0) > 0)){ el.innerHTML = '<div class="empty">まだ表示できるデータがありません</div>'; return; }
+  const top = Math.max.apply(null, pts.map(p => Math.max(p.val || 0, p.target || 0)));
+  const max = top * 1.15 || 1;
   const n = pts.length;
   const slot = (CW-CL-CR)/n;
   const bw = Math.min(46, slot*0.62);
+  const H = CH-CT-CB;
+  const fmt = cfg.fmt || (v => v.toFixed(v >= 100 ? 0 : 1));
+  const many = n > 8;
+  const step = many ? Math.ceil(n/7) : 1;
+  let maxI = 0;
+  pts.forEach((p,i) => { if((p.val || 0) > (pts[maxI].val || 0)) maxI = i; });
   let g = '';
   niceTicks(0, max, 4).forEach(tv => {
-    const y = CH-CB - tv/max*(CH-CT-CB);
+    const y = CH-CB - tv/max*H;
     g += `<line x1="${CL}" x2="${CW-CR}" y1="${y}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
-    g += `<text x="${CL-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="var(--axis)">${Math.round(tv)}</text>`;
+    g += `<text x="${CL-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="var(--axis)">${Math.round(tv).toLocaleString('ja-JP')}</text>`;
   });
   pts.forEach((p,i) => {
     const x = CL + slot*i + (slot-bw)/2;
-    const h = Math.max(2, p.val/max*(CH-CT-CB));
+    const v = p.val || 0;
+    const h = v > 0 ? Math.max(2, v/max*H) : 0;
     const y = CH-CB-h;
-    g += `<path d="${roundTop(x, y, bw, h, 4)}" fill="${cfg.color || 'var(--c1)'}"/>`;
-    g += `<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${p.val.toFixed(p.val >= 100 ? 0 : 1)}</text>`;
-    g += `<text x="${x+bw/2}" y="${CH-8}" text-anchor="middle" font-size="10.5" fill="var(--axis)">${esc(p.label)}</text>`;
+    if(h) g += `<path d="${roundTop(x, y, bw, h, Math.min(4, bw/2))}" fill="${cfg.color || 'var(--c1)'}"${p.partial ? ' opacity="0.45"' : ''}/>`;
+    let ly = y;
+    if(p.target > 0){
+      const ty = CH-CB - p.target/max*H;
+      g += `<line x1="${x-3}" x2="${x+bw+3}" y1="${ty}" y2="${ty}" stroke="var(--axis)" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>`;
+      ly = Math.min(ly, ty);
+    }
+    if(v > 0 && (!many || i === n-1 || i === maxI)) g += `<text x="${x+bw/2}" y="${ly-6}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${fmt(v)}</text>`;
+    if((n-1-i) % step === 0) g += `<text x="${x+bw/2}" y="${CH-8}" text-anchor="middle" font-size="10.5" fill="var(--axis)">${esc(p.label)}</text>`;
   });
-  el.innerHTML = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="月別距離">${g}</svg><div class="tip"></div>`;
-  el._pts = pts.map((p,i) => ({px:CL + slot*i + slot/2, label:p.full || p.label, rows:[['距離', p.val.toFixed(1)+' km'], ['回数', p.count + ' 回']]}));
+  el.innerHTML = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="${esc(cfg.aria || '棒グラフ')}">${g}</svg><div class="tip"></div>`;
+  el._pts = pts.map((p,i) => ({px:CL + slot*i + slot/2, label:p.full || p.label, rows: p.rows || [['距離', (p.val || 0).toFixed(1)+' km'], ['回数', (p.count || 0) + ' 回']]}));
   attachTip(el);
 }
 function attachTip(el){
@@ -1391,6 +1499,67 @@ function renderRecordTab(){
     <div class="tile"><div class="t-l">ベストペース</div><div class="t-v num">${best ? fmtPace(best.p) : '—'}<small>/km</small></div><div class="t-s">${best ? mdLabel(best.r.date) + '・' + best.r.dist.toFixed(2) + 'km' : ''}</div></div>`;
   renderRecChart();
   renderRecTable();
+  renderGymView();
+}
+function applyRecKind(){
+  $$('#kindSeg button').forEach(b => b.classList.toggle('on', b.dataset.k === ui.recKind));
+  $('#runView').style.display = ui.recKind === 'gym' ? 'none' : '';
+  $('#gymView').style.display = ui.recKind === 'gym' ? '' : 'none';
+}
+function gymCardHtml(g, opt){
+  const st = gymStats(g);
+  const ex = exArr(g).filter(e => exStats(e).sets);
+  return `<div class="rcard gcard" data-gym="${g.id}">
+      <div class="r1"><span class="rdate">${opt && opt.inDay ? '筋トレ' : mdLabel(g.date) + '(' + dowOf(g.date) + ')'}</span><span class="sp"></span><span class="gtot">総負荷量<b class="num">${fmtKg(st.vol)}</b>kg</span></div>
+      <div class="gmeta">${st.ex}種目・${st.sets}セット・${st.reps}レップ</div>
+      ${ex.length ? `<table class="exsum">${ex.map(e => { const x = exStats(e); return `<tr><td class="en">${esc(e.n)}</td><td class="es">${esc(setsNotation(e.sets))}</td><td class="ev"><span class="num">${fmtKg(x.vol)}</span>kg<br><span class="mini">RM ${fmtRM(x.rm)}</span></td></tr>`; }).join('')}</table>` : ''}
+      ${g.note ? `<div class="rmeta">${esc(g.note)}</div>` : ''}
+    </div>`;
+}
+function renderGymView(){
+  const gs = sortedGyms();
+  const t = todayStr(), ws = weekStartOf(t), mk = monthKeyOf(t);
+  const vol = arr => arr.reduce((a,g) => a + gymStats(g).vol, 0);
+  const wk = gs.filter(g => weekStartOf(g.date) === ws);
+  const mo = gs.filter(g => monthKeyOf(g.date) === mk);
+  let best = null;
+  gs.forEach(g => exArr(g).forEach(e => {
+    if(e.n !== 'ベンチプレス') return;
+    const x = exStats(e);
+    if(x.rm > 0 && (!best || x.rm > best.rm)) best = {rm: x.rm, date: g.date};
+  }));
+  $('#gymTiles').innerHTML = `
+    <div class="tile"><div class="t-l">今週</div><div class="t-v num">${fmtKg(vol(wk))}<small>kg</small></div><div class="t-s">${wk.length}回</div></div>
+    <div class="tile"><div class="t-l">今月</div><div class="t-v num">${fmtKg(vol(mo))}<small>kg</small></div><div class="t-s">${mo.length}回</div></div>
+    <div class="tile"><div class="t-l">累計</div><div class="t-v num">${fmtKg(vol(gs))}<small>kg</small></div><div class="t-s">${gs.length}回</div></div>
+    <div class="tile"><div class="t-l">ベンチ最大RM</div><div class="t-v num">${best ? fmtRM(best.rm) : '—'}<small>kg</small></div><div class="t-s">${best ? mdLabel(best.date) : ''}</div></div>`;
+  renderGymChart();
+  $('#gymList').innerHTML = gs.length
+    ? gs.slice().reverse().map(g => gymCardHtml(g)).join('')
+    : '<div class="empty">まだ筋トレの記録がありません。「＋ 筋トレを記録」から入力できます</div>';
+}
+function renderGymChart(){
+  const gs = sortedGyms();
+  const cnt = {};
+  gs.forEach(g => exArr(g).forEach(e => { if(e.n && exStats(e).sets) cnt[e.n] = (cnt[e.n] || 0) + 1; }));
+  const opts = ['ALL'].concat(Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a]));
+  if(opts.indexOf(ui.gymFilter) < 0) ui.gymFilter = 'ALL';
+  const f = ui.gymFilter;
+  $$('#gymMetricSeg button').forEach(b => b.classList.toggle('on', b.dataset.gm === ui.gymMetric));
+  $('#gymFilter').innerHTML = opts.map(o => `<button type="button" data-gf="${esc(o)}" class="${o === f ? 'on' : ''}">${esc(o)}</button>`).join('');
+  const pts = gs.map(g => ({g, st: gymStats(g, f)})).filter(x => x.st.sets > 0).slice(-20);
+  $('#gymChartNote').textContent = pts.length ? '直近' + pts.length + '回' : '';
+  if(ui.gymMetric === 'rm'){
+    lineChart($('#gymChart'), {yFmt: v => fmtRM(v),
+      points: pts.map(x => ({label: mdLabel(x.g.date), vals: [x.st.rm]})),
+      series: [{name: '最大RM(kg)', color: 'var(--c3)'}]});
+    $('#gymLegend').innerHTML = legendHtml([['var(--c3)', '最大RM(kg)・' + f]]) + '<span class="li mini">RM = 重さ×(1+回数÷40)</span>';
+  } else {
+    barChart($('#gymChart'), {color: 'var(--c3)', aria: '総負荷量の推移', fmt: v => fmtKg(v),
+      points: pts.map(x => ({label: mdLabel(x.g.date), full: mdLabel(x.g.date) + '(' + dowOf(x.g.date) + ')・' + f, val: x.st.vol,
+        rows: [['総負荷量', fmtKg(x.st.vol) + ' kg'], ['セット', x.st.sets + ''], ['レップ', x.st.reps + ''], ['最大RM', fmtRM(x.st.rm) + ' kg']]}))});
+    $('#gymLegend').innerHTML = legendHtml([['var(--c3)', '総負荷量(kg)・' + f]]);
+  }
 }
 function renderRecChart(){
   const recs = sortedRecs().filter(recComplete).slice(-20);
@@ -1413,6 +1582,11 @@ function renderRecChart(){
       points: recs.map(r => ({label:label(r), vals:[recSpeed(r), recTgtSpeed(r)]})),
       series: [{name:'スピード', color:'var(--c1)'}, {name:'目標', color:'var(--axis)', dash:true}]});
     lg.innerHTML = legendHtml([['var(--c1)','スピード(km/h)'], ['dash','目標スピード']]);
+  } else if(m === 'dist'){
+    barChart(box, {color:'var(--c1)', aria:'距離の推移', fmt: v => v.toFixed(1),
+      points: recs.map(r => ({label:label(r), full: mdLabel(r.date) + '(' + dowOf(r.date) + ')', val: r.dist,
+        rows: [['距離', r.dist.toFixed(2) + ' km'], ['タイム', fmtDur(r.dur)], ['ペース', fmtPace(recPace(r)) + '/km']]}))});
+    lg.innerHTML = legendHtml([['var(--c1)','1回の距離(km)']]);
   } else {
     const z = hrZone();
     lineChart(box, {yFmt:v => Math.round(v),
@@ -1502,11 +1676,12 @@ function renderCalendar(){
       const km = runs.reduce((s,r) => s + r.dist, 0);
       const races = raceBy[ds] || [];
       const gy = gymBy[ds] || [];
-      const gk = gy.length ? gymKind(gy[0].kind) : null;
+      const gvol = gy.reduce((a,g2) => a + gymStats(g2).vol, 0);
       h += `<div class="cal-cell ${out?'out':''} ${ds===today?'today':''} ${races.length?'race':''}" data-day="${ds}">
-        <div class="top"><span class="d">${d.getDate()}</span>${gk ? `<span class="gy" title="筋トレ(${esc(gk.label)})"><span class="gl">${esc(gk.cal)}</span><span class="gs">${esc(gk.short)}</span></span>` : ''}</div>
+        <div class="top"><span class="d">${d.getDate()}</span></div>
         ${races.length ? `<span class="rc">${esc(races[0].name.replace(/第\d+回/, ''))}</span>` : ''}
         ${km ? `<span class="km">${km.toFixed(1)}<small>km</small></span>` : ''}
+        ${gy.length ? `<span class="gv" title="筋トレ 総負荷量(ALL)">${gvol > 0 ? fmtKg(gvol) : '筋トレ'}${gvol > 0 ? '<small>kg</small>' : ''}</span>` : ''}
         ${pendBy[ds] ? '<span class="pin" style="background:var(--accent)"></span>' : ''}
       </div>`;
     }
@@ -1515,12 +1690,15 @@ function renderCalendar(){
   $('#calGrid').innerHTML = h;
   const moRecs = state.records.filter(r => recComplete(r) && r.date.slice(0,7) === (y + '-' + pad(m+1)));
   const moKm = moRecs.reduce((s,r) => s + r.dist, 0);
-  const moGym = (state.gyms || []).filter(g => g.date.slice(0,7) === (y + '-' + pad(m+1))).length;
-  $('#calSummary').textContent = (m+1) + '月: ラン ' + moKm.toFixed(1) + 'km / ' + moRecs.length + '回' + (moRecs.length ? ' / 最長 ' + Math.max.apply(null, moRecs.map(r => r.dist)).toFixed(1) + 'km' : '') + ' ・ 筋トレ ' + moGym + '回';
+  const moGyms = (state.gyms || []).filter(g => g.date.slice(0,7) === (y + '-' + pad(m+1)));
+  const moGym = moGyms.length;
+  const moVol = moGyms.reduce((a,g) => a + gymStats(g).vol, 0);
+  $('#calSummary').textContent = (m+1) + '月: ラン ' + moKm.toFixed(1) + 'km / ' + moRecs.length + '回' + (moRecs.length ? ' / 最長 ' + Math.max.apply(null, moRecs.map(r => r.dist)).toFixed(1) + 'km' : '') + ' ・ 筋トレ ' + moGym + '回' + (moGym ? ' / 総負荷量 ' + fmtKg(moVol) + 'kg' : '');
   $('#calLegend').innerHTML = ['土台づくり','距離を伸ばす','実戦期','テーパー','回復']
     .map(p => `<span class="li"><span class="sw" style="background:${PHASE_COL[p]}"></span>${p}</span>`).join('')
     + '<span class="li"><span class="sw" style="background:var(--c2)"></span>レース日</span>'
-    + '<span class="li"><span class="sw" style="background:var(--indigo); height:8px; border-radius:2px"></span>筋トレ(押=押す日・引=引く日)</span>';
+    + '<span class="li"><b style="color:var(--c1)">0.0</b> ラン距離(km)</span>'
+    + '<span class="li"><b style="color:var(--indigo)">0,000</b> 筋トレ総負荷量ALL(kg)</span>';
 }
 function openDayModal(ds){
   ui.dayDate = ds;
@@ -1545,15 +1723,7 @@ function openDayModal(ds){
         </div>` : '<div class="note">タップして結果を入力</div>'}
         ${photoThumbsHtml(r, 'sm')}
       </div>`).join('');
-  const gymHtml = gyms.map(g => {
-    const kd = gymKind(g.kind);
-    const fl = GYM_FEEL.filter(f => f[0] === g.feel)[0];
-    return `<div class="rcard gcard" data-gym="${g.id}">
-        <div class="r1"><span class="rdate">筋トレ</span><span class="chip ind">${esc(kd.label)}</span><span class="sp"></span>${fl ? `<span class="chip ${fl[2]}">${fl[1]}</span>` : ''}</div>
-        ${(g.items || []).length ? `<div class="gitems">${g.items.map(esc).join('・')}</div>` : ''}
-        ${g.note ? `<div class="rmeta">${esc(g.note)}</div>` : ''}
-      </div>`;
-  }).join('');
+  const gymHtml = gyms.map(g => gymCardHtml(g, {inDay: true})).join('');
   $('#dayModalList').innerHTML = raceHtml + runHtml + gymHtml
     + ((races.length || recs.length || gyms.length) ? '' : '<div class="empty">この日の記録はありません</div>');
   openModal('dayModal');
@@ -1637,11 +1807,30 @@ function renderStatsTab(){
     <div class="tile"><div class="t-l">今年(${yr})</div><div class="t-v num">${yrKm.toFixed(1)}<small>km</small></div></div>
     <div class="tile"><div class="t-l">月間最高</div><div class="t-v num">${bestMonth ? byMonth[bestMonth].km.toFixed(1) : '—'}<small>km</small></div><div class="t-s">${bestMonth ? bestMonth.slice(0,4) + '年' + parseInt(bestMonth.slice(5),10) + '月' : ''}</div></div>
     <div class="tile"><div class="t-l">最長ラン</div><div class="t-v num">${longest ? longest.dist.toFixed(1) : '—'}<small>km</small></div><div class="t-s">${longest ? mdLabel(longest.date) : ''}</div></div>`;
+  renderWeekChart();
   barChart($('#monthChart'), {
-    color:'var(--c1)',
+    color:'var(--c1)', aria:'月別ラン距離',
     points: months.map(k => ({label: parseInt(k.slice(5),10) + '月', full: k.slice(0,4) + '年' + parseInt(k.slice(5),10) + '月', val: byMonth[k].km, count: byMonth[k].count}))
   });
   renderAggTable();
+}
+function renderWeekChart(){
+  const byWeek = aggregate(weekStartOf);
+  const cur = weekStartOf(todayStr());
+  const keys = Object.keys(byWeek).sort();
+  let first = keys.length ? keys[0] : cur;
+  if(PLAN.weeks.length && PLAN.weeks[0].start < first) first = PLAN.weeks[0].start;
+  const weeks = [];
+  for(let ws = first; ws <= cur; ws = addDays(ws, 7)) weeks.push(ws);
+  barChart($('#weekChart'), {color:'var(--c1)', aria:'週別ラン距離', fmt: v => v.toFixed(1),
+    points: weeks.slice(-20).map(ws => {
+      const a = byWeek[ws] || {km:0, count:0};
+      const pw = planWeekOf(ws);
+      return {label: mdLabel(ws), val: a.km, target: pw ? pw.km : null, partial: ws === cur,
+        full: mdLabel(ws) + '〜' + mdLabel(addDays(ws,6)) + (pw ? ' W' + pw.w + ' ' + pw.phase : '') + (ws === cur ? '(進行中)' : ''),
+        rows: [['距離', a.km.toFixed(1) + ' km'], ['回数', a.count + ' 回']].concat(pw ? [['計画の目安', pw.kmLabel + ' km']] : [])};
+    })});
+  $('#weekLegend').innerHTML = legendHtml([['var(--c1)','週の距離'], ['dash','計画の目安']]) + '<span class="li mini">薄い棒は今週(途中経過)</span>';
 }
 function renderAggTable(){
   const tbl = $('#aggTable');
@@ -1990,21 +2179,13 @@ function saveRace(){
 }
 
 /* ---------------- 筋トレ記録 ---------------- */
-function defaultGymKind(ds){
-  const dow = dparse(ds).getDay();
-  if(dow === 2) return 'push';
-  if(dow === 5) return 'pull';
-  const ws = weekStartOf(ds);
-  const done = (state.gyms || []).filter(g => weekStartOf(g.date) === ws && g.date !== ds).map(g => g.kind);
-  if(done.indexOf('push') < 0) return 'push';
-  if(done.indexOf('pull') < 0) return 'pull';
-  return 'other';
-}
-function defaultGymItems(k){ return gymKind(k).items.filter(it => it[1]).map(it => it[0]); }
-function gymItemNames(){
-  const names = gymKind(ui.gymKind).items.map(it => it[0]);
-  ui.gymItems.forEach(n => { if(names.indexOf(n) < 0) names.push(n); });
-  return names;
+function prevSetsOf(name, date, excludeId){
+  const gs = sortedGyms().filter(g => g.id !== excludeId && g.date <= date).reverse();
+  for(let i = 0; i < gs.length; i++){
+    const e = exArr(gs[i]).filter(x => x.n === name && exStats(x).sets)[0];
+    if(e) return {date: gs[i].date, sets: e.sets.map(numSet).filter(x => x.r > 0).map(x => ({w: fmtW(x.w), r: String(x.r)}))};
+  }
+  return null;
 }
 function openGymModal(id, presetDate){
   /* その日の筋トレ記録が既にあれば、新規ではなくそれを開く(二重登録防止) */
@@ -2014,25 +2195,21 @@ function openGymModal(id, presetDate){
   }
   const g = id ? (state.gyms || []).filter(x => x.id === id)[0] : null;
   ui.editGymId = g ? g.id : null;
-  ui.gymTouched = false;
   disarmDelete();
   if(g){
     $('#gymModalTitle').textContent = '筋トレ記録の編集';
     $('#g_date').value = g.date;
-    ui.gymKind = g.kind || 'other';
-    ui.gymItems = (g.items || []).slice();
-    ui.gymFeel = g.feel || '';
     $('#g_note').value = g.note || '';
+    ui.gymDraft = {ex: exArr(g).map(e => ({n: e.n, sets: e.sets.map(numSet).map(x => ({w: fmtW(x.w), r: String(x.r)})), from: null}))};
     $('#gymDelBtn').style.display = '';
   } else {
     $('#gymModalTitle').textContent = '筋トレを記録';
     $('#g_date').value = presetDate || todayStr();
-    ui.gymKind = defaultGymKind($('#g_date').value);
-    ui.gymItems = defaultGymItems(ui.gymKind);
-    ui.gymFeel = '';
     $('#g_note').value = '';
+    ui.gymDraft = {ex: []};
     $('#gymDelBtn').style.display = 'none';
   }
+  $('#g_newEx').value = '';
   renderGymModal();
   openModal('gymModal');
 }
@@ -2040,28 +2217,65 @@ function renderGymModal(){
   const ds = $('#g_date').value;
   $('#gymDow').textContent = ds ? '(' + dowOf(ds) + ')' : '';
   $('#gymModalSub').innerHTML = ds ? '予定: <b>' + esc(menuFor(ds).label) + '</b>' : '';
-  $('#gymKindChips').innerHTML = GYM_KINDS.map(k => `<button type="button" data-gk="${k.k}" class="${ui.gymKind === k.k ? 'on' : ''}">${esc(k.label)}</button>`).join('');
-  $('#gymItemChips').innerHTML = gymItemNames().map(n => {
-    const on = ui.gymItems.indexOf(n) >= 0;
-    return `<button type="button" data-gi="${esc(n)}" class="${on ? 'on' : ''}">${on ? '✓ ' : ''}${esc(n)}</button>`;
-  }).join('');
-  $('#gymFeelChips').innerHTML = GYM_FEEL.map(f => `<button type="button" data-gf="${f[0]}" class="${ui.gymFeel === f[0] ? 'on' : ''}">${f[1]}</button>`).join('');
+  $('#gymExList').innerHTML = ui.gymDraft.ex.map((e, ei) => `
+    <div class="exblk">
+      <div class="exhead"><b>${esc(e.n)}</b><span class="mini" data-exsum="${ei}"></span><span class="sp" style="flex:1"></span><button type="button" class="xbtn" data-exdel="${ei}" aria-label="この種目を削除">×</button></div>
+      ${e.from ? `<div class="exfrom">前回(${mdLabel(e.from)})のセットを入れています。違うところだけ直してください</div>` : ''}
+      <table class="settbl">
+        <tr><th style="text-align:center">セット</th><th>重さ(kg)</th><th>回数</th><th class="r">RM</th><th></th></tr>
+        ${e.sets.map((st, si) => `<tr>
+          <td class="no">${si+1}</td>
+          <td><input type="text" inputmode="decimal" data-w="${ei}:${si}" value="${esc(st.w)}" placeholder="kg"></td>
+          <td><input type="text" inputmode="numeric" data-r="${ei}:${si}" value="${esc(st.r)}" placeholder="回"></td>
+          <td class="rm num" data-rm="${ei}:${si}"></td>
+          <td style="width:32px"><button type="button" class="xbtn" data-sdel="${ei}:${si}" aria-label="このセットを削除">×</button></td>
+        </tr>`).join('')}
+      </table>
+      <div class="exfoot"><button type="button" class="btn sm" data-sadd="${ei}">＋ セット</button><span class="mini">直前のセットと同じ重さ・回数で追加されます</span></div>
+    </div>`).join('') || '<div class="empty" style="padding:10px 0 14px">下の「種目を追加」から選んでください</div>';
+  const have = ui.gymDraft.ex.map(e => e.n);
+  $('#gymExChips').innerHTML = gymExNames().filter(n => have.indexOf(n) < 0).map(n => `<button type="button" data-exadd="${esc(n)}">＋ ${esc(n)}</button>`).join('');
+  refreshGymLive();
+}
+function refreshGymLive(){
+  ui.gymDraft.ex.forEach((e, ei) => {
+    e.sets.forEach((st, si) => {
+      const c = document.querySelector('[data-rm="' + ei + ':' + si + '"]');
+      if(c){ const x = numSet(st); c.textContent = x.r > 0 && x.w > 0 ? fmtRM(setRM(x.w, x.r)) : ''; }
+    });
+    const x = exStats(e);
+    const m = document.querySelector('[data-exsum="' + ei + '"]');
+    if(m) m.textContent = x.sets ? x.sets + 'セット・' + x.reps + '回・' + fmtKg(x.vol) + 'kg' : '';
+  });
+  const t = gymStats(ui.gymDraft);
+  $('#gymSum').innerHTML = [['合計種目数', t.ex], ['合計セット数', t.sets], ['合計レップ数', t.reps], ['合計負荷量', fmtKg(t.vol)]]
+    .map(x => `<div><div class="k">${x[0]}</div><div class="v num">${x[1]}</div></div>`).join('');
+}
+function addGymEx(name){
+  name = String(name || '').trim();
+  if(!name) return;
+  if(ui.gymDraft.ex.some(e => e.n === name)){ toast('その種目はもう入っています'); return; }
+  const prev = prevSetsOf(name, $('#g_date').value || todayStr(), ui.editGymId);
+  ui.gymDraft.ex.push({n: name, sets: prev && prev.sets.length ? prev.sets : [{w:'', r:''}], from: prev && prev.sets.length ? prev.date : null});
+  renderGymModal();
 }
 function saveGym(){
   const date = $('#g_date').value;
   if(!date){ toast('日付を入力してください'); return; }
+  const ex = ui.gymDraft.ex
+    .map(e => ({n: e.n, sets: e.sets.map(numSet).filter(x => x.r > 0).map(x => ({w: Math.round(x.w*100)/100, r: x.r}))}))
+    .filter(e => e.n && e.sets.length);
+  if(!ex.length){ toast('種目とセット(重さ・回数)を入力してください'); return; }
   const old = ui.editGymId ? (state.gyms || []).filter(x => x.id === ui.editGymId)[0] : null;
   touchGym({
     id: old ? old.id : uid(),
-    date,
-    kind: ui.gymKind,
-    items: gymItemNames().filter(n => ui.gymItems.indexOf(n) >= 0),
-    feel: ui.gymFeel || '',
+    date, ex,
     note: $('#g_note').value.trim(),
     createdAt: old ? (old.createdAt || old.u) : Date.now()
   });
   closeModals();
-  toast('筋トレを記録しました');
+  ui.recKind = 'gym'; applyRecKind();
+  toast('保存しました(総負荷量 ' + fmtKg(gymStats({ex}).vol) + 'kg)');
 }
 function refreshHrNote(){
   const lo = parseInt($('#s_hrlo').value, 10) || 135;
@@ -2185,30 +2399,61 @@ function bindEvents(){
   $('#dayAddBtn').addEventListener('click', () => openRecModal('manual', null, ui.dayDate));
   $('#dayGymBtn').addEventListener('click', () => openGymModal(null, ui.dayDate));
   $('#addGymBtn').addEventListener('click', () => openGymModal(null));
-  $('#gymKindChips').addEventListener('click', e => {
+  $('#kindSeg').addEventListener('click', e => {
     const b = e.target.closest('button'); if(!b) return;
-    if(ui.gymKind !== b.dataset.gk){ ui.gymKind = b.dataset.gk; ui.gymItems = defaultGymItems(ui.gymKind); }
-    ui.gymTouched = true;
-    renderGymModal();
+    ui.recKind = b.dataset.k;
+    applyRecKind();
   });
-  $('#gymItemChips').addEventListener('click', e => {
+  $('#gymMetricSeg').addEventListener('click', e => {
     const b = e.target.closest('button'); if(!b) return;
-    const n = b.dataset.gi, i = ui.gymItems.indexOf(n);
-    if(i >= 0) ui.gymItems.splice(i, 1); else ui.gymItems.push(n);
-    ui.gymTouched = true;
-    renderGymModal();
+    ui.gymMetric = b.dataset.gm;
+    renderGymChart();
   });
-  $('#gymFeelChips').addEventListener('click', e => {
+  $('#gymFilter').addEventListener('click', e => {
     const b = e.target.closest('button'); if(!b) return;
-    ui.gymFeel = ui.gymFeel === b.dataset.gf ? '' : b.dataset.gf;
-    renderGymModal();
+    ui.gymFilter = b.dataset.gf;
+    renderGymChart();
   });
-  $('#g_date').addEventListener('change', () => {
-    if(!ui.editGymId && !ui.gymTouched && $('#g_date').value){
-      ui.gymKind = defaultGymKind($('#g_date').value);
-      ui.gymItems = defaultGymItems(ui.gymKind);
+  $('#g_date').addEventListener('change', renderGymModal);
+  $('#gymExChips').addEventListener('click', e => {
+    const b = e.target.closest('[data-exadd]'); if(!b) return;
+    addGymEx(b.dataset.exadd);
+  });
+  $('#gymAddExBtn').addEventListener('click', () => { addGymEx($('#g_newEx').value); $('#g_newEx').value = ''; });
+  $('#g_newEx').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addGymEx($('#g_newEx').value); $('#g_newEx').value = ''; } });
+  $('#gymExList').addEventListener('input', e => {
+    const t = e.target;
+    const key = t.dataset.w || t.dataset.r;
+    if(!key) return;
+    const p = key.split(':').map(Number);
+    const st = ui.gymDraft.ex[p[0]] && ui.gymDraft.ex[p[0]].sets[p[1]];
+    if(!st) return;
+    if(t.dataset.w) st.w = t.value; else st.r = t.value;
+    refreshGymLive();
+  });
+  $('#gymExList').addEventListener('click', e => {
+    const add = e.target.closest('[data-sadd]');
+    if(add){
+      const ex = ui.gymDraft.ex[+add.dataset.sadd];
+      const last = ex.sets[ex.sets.length - 1];
+      ex.sets.push(last ? {w: last.w, r: last.r} : {w:'', r:''});
+      renderGymModal();
+      return;
     }
-    renderGymModal();
+    const sd = e.target.closest('[data-sdel]');
+    if(sd){
+      const p = sd.dataset.sdel.split(':').map(Number);
+      const ex = ui.gymDraft.ex[p[0]];
+      ex.sets.splice(p[1], 1);
+      if(!ex.sets.length) ex.sets.push({w:'', r:''});
+      renderGymModal();
+      return;
+    }
+    const xd = e.target.closest('[data-exdel]');
+    if(xd){
+      if(xd.classList.contains('armed')){ ui.gymDraft.ex.splice(+xd.dataset.exdel, 1); renderGymModal(); }
+      else { xd.classList.add('armed'); xd.textContent = '種目を削除?'; }
+    }
   });
   $('#gymSaveBtn').addEventListener('click', saveGym);
   $('#gymCancelBtn').addEventListener('click', closeModals);
